@@ -1,0 +1,31 @@
+{
+    "key1": "val",
+    "key2": "val",
+    "key3": "val",
+    "key4": "val",
+    "parameters": {
+        "password": "Fetch from vault=foo or defaultlol"
+    },
+    "param": "value",
+    "section": {
+        "toto": "Fetch from consulprefix\/foo\/bar",
+        "param1": "%password%",
+        "flag": true,
+        "number": 10000,
+        "size": 1048576,
+        "time": 0.2,
+        "string": "something",
+        "subsection": {
+            "host": {
+                "host": "hostname \nc'est\tune chaine \"longue",
+                "port": 901,
+                "key1": "val",
+                "key2": "val",
+                "key3": "val",
+                "key4": "val"
+            }
+        },
+        "pierrick": "foo\nok\nlol",
+        "foo": "bar bar "
+    }
+}

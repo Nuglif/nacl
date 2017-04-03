@@ -1,0 +1,12 @@
+{
+    "key1": "val",
+    "key2": "val",
+    "key3": "val",
+    "key4": "val",
+    "toto": {
+        "key1": "val",
+        "key2": "val",
+        "key3": "val",
+        "key4": "val"
+    }
+}

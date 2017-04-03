@@ -1,0 +1,8 @@
+{
+    "var1": "foo bar baz",
+    "var2": "bar baz",
+    "var3": "foo bar",
+    "var4": "bar",
+    "var5": "\\${BAR}",
+    "var6": "bar"
+}

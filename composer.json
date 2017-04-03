@@ -1,0 +1,21 @@
+{
+    "name": "adoy/nacl",
+    "description": "Nuglif Application Configuration Language",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pierrick Charron",
+            "email": "pierrick@adoy.net"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+		"phpunit/phpunit": "@stable"
+	},
+    "autoload": {
+        "psr-4": {
+            "Adoy\\Nacl\\": "src"
+        }
+    }
+}

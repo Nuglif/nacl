@@ -1,0 +1,20 @@
+{
+    "parameters": [],
+    "param": "value",
+    "section": {
+        "param1": "%password%",
+        "flag": true,
+        "number": 10000,
+        "size": 1048576,
+        "time": 0.2,
+        "string": "something",
+        "subsection": {
+            "host": {
+                "host": "hostname \nc'est\tune chaine \"longue",
+                "port": 901
+            }
+        },
+        "pierrick": "foo\nok\nlol",
+        "foo": "bar bar "
+    }
+}
