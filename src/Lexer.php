@@ -1,6 +1,6 @@
 <?php
 
-namespace Adoy\Nacl;
+namespace Nuglif\Nacl;
 
 class Lexer extends AbstractLexer
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Adoy\Nacl\Macros;
+namespace Nuglif\Nacl\Macros;
 
-use Adoy\Nacl\MacroInterface;
+use Nuglif\Nacl\MacroInterface;
 
 class Consul implements MacroInterface
 {

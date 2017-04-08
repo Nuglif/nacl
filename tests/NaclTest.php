@@ -1,6 +1,6 @@
 <?php
 
-namespace Adoy\Nacl;
+namespace Nuglif\Nacl;
 
 class NaclTest extends \PHPUnit\Framework\TestCase
 {
@@ -83,7 +83,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException Adoy\Nacl\LexingException
+     * @expectedException Nuglif\Nacl\LexingException
      * @expectedExceptionMessage Unterminated string
      */
     public function testUnterminatedString()
@@ -93,7 +93,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException Adoy\Nacl\LexingException
+     * @expectedException Nuglif\Nacl\LexingException
      * @expectedExceptionMessage Unterminated HEREDOC
      */
     public function testUnterminatedHeredoc()
@@ -103,7 +103,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException Adoy\Nacl\LexingException
+     * @expectedException Nuglif\Nacl\LexingException
      * @expectedExceptionMessage Unterminated multiline comment
      */
     public function testUnterminatedMultilineComment()
