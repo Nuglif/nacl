@@ -232,10 +232,15 @@ class Parser
 
     private function doInclude($file)
     {
-        $path = dirname($this->lexer->getFilename()) . '/' . $file;
+        $cwd = getcwd();
+        chdir(dirname($this->lexer->getFilename()));
+        if (!$path = realpath($file)) {
+            $this->error('Unable to include file \'' . $file . '\'');
+        }
+        chdir($cwd);
 
         $token = $this->token;
-        $this->lexer->push(file_get_contents($path), realpath($path));
+        $this->lexer->push(file_get_contents($path), $path);
         $this->nextToken();
         $value = $this->parseObject();
         $this->consume(Token::T_EOF);
