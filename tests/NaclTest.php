@@ -27,8 +27,8 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         $this->parser->registerMacro(new Macros\Env);
         $this->parser->registerMacro(new Macros\Constant);
 
-        $this->parser->addVariable('BAR', 'bar');
-        $this->parser->addVariable('PREFIX', 'prefix');
+        $this->parser->setVariable('BAR', 'bar');
+        $this->parser->setVariable('PREFIX', 'prefix');
     }
 
     public static function getJsonFiles()

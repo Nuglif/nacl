@@ -4,5 +4,6 @@
     "var3": "foo bar",
     "var4": "bar",
     "var5": "\\${BAR}",
-    "var6": "bar"
+    "var6": "bar",
+    "hello": "Hello tout le monde"
 }

@@ -6,8 +6,8 @@ class Parser
 {
     private $lexer;
     private $token;
-    private $macro     = [];
-    private $variables = [];
+    private $macro      = [];
+    private $variables  = [];
 
     public function __construct(Lexer $lexer = null)
     {
@@ -19,7 +19,7 @@ class Parser
         $this->macro[$macro->getName()] = [ $macro, 'execute' ];
     }
 
-    public function addVariable($name, $value)
+    public function setVariable($name, $value)
     {
         $this->variables[$name] = $value;
     }
@@ -69,6 +69,15 @@ class Parser
                     $this->consumeOptional(':') || $this->consumeOptional('=');
                     $val           = $this->parseValue();
                     $object[$name] = $val;
+                    $separator     = $this->consumeOptional(',') || $this->consumeOptional(';');
+                    $continue      = is_array($val) || $separator;
+                    break;
+                case Token::T_VAR:
+                    $name = $this->token->value;
+                    $this->nextToken();
+                    $this->consumeOptional(':') || $this->consumeOptional('=');
+                    $val           = $this->parseValue();
+                    $this->setVariable($name, $val);
                     $separator     = $this->consumeOptional(',') || $this->consumeOptional(';');
                     $continue      = is_array($val) || $separator;
                     break;
