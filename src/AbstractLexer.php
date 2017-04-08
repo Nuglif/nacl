@@ -20,12 +20,10 @@ abstract class AbstractLexer
 
     abstract protected function getRules();
 
-    protected $terminate = false;
-
     public function __construct()
     {
         foreach ($this->getRules() as $state => $patterns) {
-            $eofCallback = [ $this, 'yyterminate' ];
+            $eofCallback = false;
 
             if (isset($patterns[self::EOF])) {
                 $eofCallback = $patterns[self::EOF];
@@ -39,33 +37,30 @@ abstract class AbstractLexer
         }
     }
 
-    protected function yyterminate()
-    {
-        $this->terminate = true;
-    }
-
     public function yylex()
     {
-        while (!$this->terminate) {
-            if (isset($this->content[$this->count])) {
-                if (!preg_match($this->regexes[$this->state], $this->content, $matches, null, $this->count)) {
-                    $this->error(sprintf('Unexpected character "%s"', $this->content[$this->count]));
-                }
-
-                for ($i = 1; '' === $matches[$i]; ++$i);
-                $this->count += strlen($matches[0]);
-                $this->line += substr_count($matches[0], "\n");
-            } else {
-                $i       = 0;
-                $matches = [ '' ];
+        if (isset($this->content[$this->count])) {
+            if (!preg_match($this->regexes[$this->state], $this->content, $matches, null, $this->count)) {
+                $this->error(sprintf('Unexpected character "%s"', $this->content[$this->count]));
             }
 
-            if ($this->tokenMaps[$this->state][$i - 1]) {
-                $callback = $this->tokenMaps[$this->state][$i - 1];
-                if ($token = $callback($matches[$i])) {
-                    return new Token($token, $matches[$i]);
-                }
+            for ($i = 1; '' === $matches[$i]; ++$i);
+            $this->count += strlen($matches[0]);
+            $this->line += substr_count($matches[0], "\n");
+        } else {
+            $i       = 0;
+            $matches = [ '' ];
+        }
+
+        if ($this->tokenMaps[$this->state][$i - 1]) {
+            $callback = $this->tokenMaps[$this->state][$i - 1];
+            if ($token = $callback($matches[$i])) {
+                return new Token($token, $matches[$i]);
             }
+        }
+
+        if ($i) {
+            return $this->yylex();
         }
     }
 
@@ -86,8 +81,6 @@ abstract class AbstractLexer
 
     public function push($content, $filename = null)
     {
-        $this->terminate = false;
-
         if (null !== $this->content) {
             $this->stack[] = [
                 $this->line,
