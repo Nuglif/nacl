@@ -86,8 +86,6 @@ class Parser
                     $val = $this->parseMacro();
                     if (is_array($val)) {
                         $object = array_merge($object, $val);
-                    } else {
-                        // @todo warning
                     }
                     $continue = $this->consumeOptional(';');
                     break;
@@ -132,7 +130,7 @@ class Parser
                 $value = $this->parseScalar();
                 break;
             case Token::T_VAR:
-                $value = $this->getSymbol($this->token->value);
+                $value = $this->getVariable($this->token->value);
                 $this->nextToken();
                 break;
             case '{':
@@ -146,7 +144,7 @@ class Parser
                 $value = $this->parseMacro();
                 break;
             default:
-                var_dump(__METHOD__, $this->token);
+                $this->syntaxError();
         }
 
         return $value;
@@ -168,7 +166,7 @@ class Parser
         do {
             switch ($this->token->type) {
                 case Token::T_ENCAPSED_VAR:
-                    $value .= $this->getSymbol($this->token->value);
+                    $value .= $this->getVariable($this->token->value);
                     break;
                 case Token::T_END_STR:
                     $continue = false;
@@ -184,7 +182,7 @@ class Parser
         return $value;
     }
 
-    private function getSymbol($name)
+    private function getVariable($name)
     {
         if (!isset($this->variables[$name])) {
             trigger_error('Undefined variable ' . $name);
@@ -253,7 +251,7 @@ class Parser
     private function consume($type)
     {
         if ($type !== $this->token->type) {
-            $this->syntaxError([$type]);
+            $this->syntaxError();
         }
 
         $this->nextToken();
@@ -275,13 +273,9 @@ class Parser
         $this->token = $this->lexer->yylex();
     }
 
-    private function syntaxError(array $expected = [])
+    private function syntaxError()
     {
         $message = 'Syntax error, unexpected \'' . Token::getLiteral($this->token->type) . '\'';
-        if (!empty($expected)) {
-            $message .= (count($expected) > 1) ? ', expected on of ' : ', expected ';
-            $message .= implode(',', array_map(Token::class . '::getLiteral', $expected));
-        }
         $this->error($message);
     }
 
