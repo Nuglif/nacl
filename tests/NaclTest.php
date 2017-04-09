@@ -54,12 +54,12 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
     public static function getNaclFiles()
     {
-        $files = glob(__DIR__ . '/nacl/*.cfg');
+        $files = glob(__DIR__ . '/nacl/*.conf');
 
         return array_map(function ($f) {
             @unlink($f . '.out');
 
-            return [$f, str_replace('.cfg', '.json', $f) ];
+            return [$f, str_replace('.conf', '.json', $f) ];
         }, $files);
     }
 
