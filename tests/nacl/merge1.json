@@ -1,0 +1,18 @@
+{
+    "foo": {
+        "value1": "value1",
+        "value2": "overwrittern",
+        "value3": "value3",
+        "value4": "value4"
+    },
+    "bar": {
+        "baz": {
+            "qux": {
+                "test": "overwritten",
+                "other": "prop"
+            },
+            "qux2": []
+        },
+        "baz2": []
+    }
+}

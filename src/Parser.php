@@ -83,10 +83,7 @@ class Parser
                     break;
                 case '.':
                     $this->nextToken();
-                    $val = $this->parseMacro();
-                    if (is_array($val)) {
-                        $object = array_merge($object, $val);
-                    }
+                    $val = $this->parseMacro($object);
                     $continue = $this->consumeOptional(';');
                     break;
             }
@@ -193,7 +190,7 @@ class Parser
         return $this->variables[$name];
     }
 
-    private function parseMacro()
+    private function parseMacro(&$context = null)
     {
         $result = null;
 
@@ -215,7 +212,7 @@ class Parser
 
         switch ($name) {
             case 'include':
-                return $this->doInclude($param, $options);
+                $result = $this->doInclude($param, $options, $context);
                 break;
             default:
                 if (!isset($this->macro[$name])) {
@@ -228,12 +225,44 @@ class Parser
         return $result;
     }
 
-    private function doInclude($file)
+    private function deepMerge(array $a1, array $a2)
     {
+        if (empty($a1)) {
+            return $a2;
+        } elseif (empty($a2)) {
+            return $a1;
+        }
+
+        if (is_int(key($a1)) || is_int(key($a2))) {
+            return $a2;
+        }
+
+        foreach ($a2 as $key => $value) {
+            if (!isset($a1[$key]) || !is_array($a1[$key]) || !is_array($value)) {
+                $a1[$key] = $value;
+            } else {
+                $a1[$key] = $this->deepMerge($a1[$key], $value);
+            }
+        }
+
+        return $a1;
+    }
+
+    private function doInclude($file, $options, &$context)
+    {
+        $options = array_merge([
+            'required' => true,
+        ], $options);
+
         $cwd = getcwd();
-        chdir(dirname($this->lexer->getFilename()));
+        if (file_exists($this->lexer->getFilename())) {
+            chdir(dirname($this->lexer->getFilename()));
+        }
         if (!$path = realpath($file)) {
-            $this->error('Unable to include file \'' . $file . '\'');
+            if ($options['required']) {
+                $this->error('Unable to include file \'' . $file . '\'');
+            }
+            return null;
         }
         chdir($cwd);
 
@@ -241,6 +270,9 @@ class Parser
         $this->lexer->push(file_get_contents($path), $path);
         $this->nextToken();
         $value = $this->parseObject();
+        if (is_array($value) && is_array($context)) {
+            $context = $this->deepMerge($context, $value);
+        }
         $this->consume(Token::T_EOF);
         $this->lexer->pop();
         $this->token = $token;
