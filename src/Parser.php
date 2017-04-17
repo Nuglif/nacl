@@ -36,6 +36,7 @@ class Parser
         }
 
         $this->consume(Token::T_EOF);
+        $this->lexer->pop();
 
         return $result;
     }
