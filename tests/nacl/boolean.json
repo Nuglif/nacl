@@ -1,0 +1,8 @@
+{
+    "on_value": true,
+    "off_value": false,
+    "no_value": false,
+    "yes_value": true,
+    "true_value": true,
+    "false_value": false
+}

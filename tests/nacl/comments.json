@@ -1,5 +1,5 @@
 {
-    "single_line_1": true,
-    "single_line_2": true,
-    "single_line_3": true
+    "hashtag_comment": true,
+    "double_slash_comment": true,
+    "multiline_comment": true
 }

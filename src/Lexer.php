@@ -13,11 +13,11 @@ class Lexer extends AbstractLexer
     const REGEX_COMMENT_ML  = '/\*';
     const REGEX_NAME        = '[A-Za-z0-9_]+';
     const REGEX_VAR         = '?:\${([^}]+)}';
-    const REGEX_NUM         = '[-+]?(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:E(?:\+|-)?[0-9]+)?(?:[kmg]b?|[s|h|min|d|w|y])?';
+    const REGEX_NUM         = '[-+]?(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:E(?:\+|-)?[0-9]+)?(?:[kg]b?|m(?:in|b|s)?|[s|h|d|w|y])?';
     const REGEX_DQUOTE      = '"';
     const REGEX_HEREDOC     = '?:<<<([A-Za-z0-9_]+)\n';
-    const REGEX_BOOL        = 'true|false|yes|no|on|off';
-    const REGEX_NULL        = 'null';
+    const REGEX_BOOL        = '(?:true|false|yes|no|on|off)\b';
+    const REGEX_NULL        = 'null\b';
     const REGEX_TOKEN       = '[\[\]=:{};,.()]';
     const REGEX_ANY         = '.';
 
@@ -182,7 +182,7 @@ class Lexer extends AbstractLexer
             $res = $f;
         }
 
-        if (preg_match('/(?:[kmg]b?|[h|min|d|w|y])$/', strtolower($val), $matches)) {
+        if (preg_match('/[^0-9]*$/', strtolower($val), $matches)) {
             switch ($matches[0]) {
                 case 'g':
                     $res *= 1000;
@@ -207,10 +207,11 @@ class Lexer extends AbstractLexer
                     $res *= 24;
                 case 'h':
                     $res *= 60;
-                case 'w':
+                case 'min':
                     $res *= 60;
                     break;
-                default:
+                case 'ms':
+                    $res /= 1000;
             }
         }
 
