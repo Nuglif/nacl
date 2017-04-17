@@ -110,4 +110,33 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         $this->parser->parse('/*');
     }
+
+    /**
+     * @test
+     * @expectedException Nuglif\Nacl\ParsingException
+     * @expectedExceptionMessage Syntax error, unexpected 'baz' (T_NAME)
+     */
+    public function testParseErrorMessageWithTokenName()
+    {
+        $this->parser->parse('foo bar baz;', 'file');
+    }
+
+    /**
+     * @test
+     * @expectedException Nuglif\Nacl\ParsingException
+     * @expectedExceptionMessage Syntax error, unexpected ';'
+     */
+    public function testParseErrorMesageWithoutTokenName()
+    {
+        $this->parser->parse('foo;', 'file');
+    }
+
+    /**
+     * @test
+     * @expectedException \InvalidArgumentException
+     */
+    public function parsingUnexistingFileThrowInvalidArgumentException()
+    {
+        $this->parser->parseFile('error');
+    }
 }

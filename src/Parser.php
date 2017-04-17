@@ -24,7 +24,7 @@ class Parser
         $this->variables[$name] = $value;
     }
 
-    public function parse($str, $filename = null)
+    public function parse($str, $filename = 'nacl string')
     {
         $this->lexer->push($str, $filename);
         $this->nextToken();
