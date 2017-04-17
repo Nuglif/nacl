@@ -2,13 +2,15 @@
 
 namespace Nuglif\Nacl;
 
+define('TEST_CONST', 'value');
+putenv('TEST=valid');
+
 class NaclTest extends \PHPUnit\Framework\TestCase
 {
     private $parser;
 
     public function setUp()
     {
-        putenv('TEST=valid');
         $lexer        = new Lexer();
         $this->parser = new Parser($lexer);
 

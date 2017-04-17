@@ -1,4 +1,5 @@
 {
     "json": "{\"lol\":\"bar\"}",
-    "env": "valid"
+    "env": "valid",
+    "const": "value"
 }
