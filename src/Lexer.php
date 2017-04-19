@@ -11,7 +11,7 @@ class Lexer extends AbstractLexer
     const REGEX_SPACE       = '[ \t\n\r]+';
     const REGEX_COMMENT     = '(?://|\#).*';
     const REGEX_COMMENT_ML  = '/\*';
-    const REGEX_NAME        = '[A-Za-z0-9_]+';
+    const REGEX_NAME        = '[A-Za-z_][A-Za-z0-9_]*';
     const REGEX_VAR         = '?:\${([^}]+)}';
     const REGEX_NUM         = '[-+]?(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:E(?:\+|-)?[0-9]+)?(?:[kg]b?|m(?:in|b|s)?|[s|h|d|w|y])?';
     const REGEX_DQUOTE      = '"';
