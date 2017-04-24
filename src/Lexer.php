@@ -37,7 +37,7 @@ class Lexer extends AbstractLexer
                 self::REGEX_SPACE      => false,
                 self::REGEX_COMMENT    => false,
                 self::REGEX_COMMENT_ML => function ($yylval) {
-                    $pos = @strpos($this->content, '*/', $this->count + 2);
+                    $pos = strpos($this->content, '*/', $this->count);
                     if (false === $pos) {
                         $this->line += substr_count(substr($this->content, $this->count), "\n");
                         $this->error('Unterminated multiline comment');
