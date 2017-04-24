@@ -79,8 +79,7 @@ class Parser
                     $this->consumeOptional(':') || $this->consumeOptional('=');
                     $val           = $this->parseValue();
                     $this->setVariable($name, $val);
-                    $separator     = $this->consumeOptional(',') || $this->consumeOptional(';');
-                    $continue      = is_array($val) || $separator;
+                    $continue      = $this->consumeOptional(',') || $this->consumeOptional(';');
                     break;
                 case '.':
                     $this->nextToken();
