@@ -39,6 +39,7 @@ abstract class AbstractLexer
 
     public function yylex()
     {
+retry:
         if (isset($this->content[$this->count])) {
             if (!preg_match($this->regexes[$this->state], $this->content, $matches, null, $this->count)) {
                 $this->error(sprintf('Unexpected character "%s"', $this->content[$this->count]));
@@ -60,7 +61,7 @@ abstract class AbstractLexer
         }
 
         if ($i) {
-            return $this->yylex();
+            goto retry;
         }
     }
 
