@@ -12,7 +12,7 @@ class Lexer extends AbstractLexer
     const REGEX_COMMENT     = '(?://|\#).*';
     const REGEX_COMMENT_ML  = '/\*';
     const REGEX_NAME        = '[A-Za-z_][A-Za-z0-9_]*';
-    const REGEX_VAR         = '?:\${([^}]+)}';
+    const REGEX_VAR         = '?:\${([A-Za-z0-9_]+)}';
     const REGEX_NUM         = '[-+]?(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:E(?:\+|-)?[0-9]+)?(?:[kg]b?|m(?:in|b|s)?|[s|h|d|w|y])?';
     const REGEX_DQUOTE      = '"';
     const REGEX_HEREDOC     = '?:<<<([A-Za-z0-9_]+)\n';
@@ -131,8 +131,15 @@ class Lexer extends AbstractLexer
                             break;
                     }
                 },
-                self::REGEX_VAR => function ($yylval) {
-                    return Token::T_ENCAPSED_VAR;
+                '\$' => function (&$yylval) {
+                    if (preg_match('/^{([A-Za-z0-9_]+)}/', substr($this->content, $this->count), $matches)) {
+                        $this->count += strlen($matches[0]);
+                        $yylval = $matches[1];
+
+                        return Token::T_ENCAPSED_VAR;
+                    }
+
+                    $this->textBuffer .= $yylval;
                 },
                 self::REGEX_DQUOTE  => function (&$yylval) {
                     $yylval = $this->textBuffer;
