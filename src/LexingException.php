@@ -2,16 +2,11 @@
 
 namespace Nuglif\Nacl;
 
-class LexingException extends \Exception
+class LexingException extends Exception
 {
-    public function __construct($message, $file = null, $line = 0)
+    public function __construct($message, $file, $line)
     {
         parent::__construct($message);
-        if ($file) {
-            $this->file = $file;
-        }
-        if ($line) {
-            $this->line = $line;
-        }
+        $this->setContext($file, $line);
     }
 }
