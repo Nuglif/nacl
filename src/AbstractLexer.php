@@ -77,7 +77,7 @@ retry:
 
     private function computeRegex($patterns)
     {
-        return '#\G(' . implode(')|\G(', $patterns) . ')#Ai';
+        return '#\G(' . implode(')|\G(', $patterns) . ')#A';
     }
 
     public function push($content, $filename = null)

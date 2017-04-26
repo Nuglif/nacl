@@ -103,13 +103,14 @@ debug on;
 
 #### Multipliers
 
-Number can be suffixed with `[kg]b?|m(in|b|s)?|[s|h|d|w|y]`
-* `k` `m` `b` standard * 1000 multipliers
-* `kb` `mb` `gb` ^2 multipliers (* 1024)
-* `ms` `s` `min` `h` `d` `w` `y` convert in seconds.
+Number can be suffixed with `m(in|s)|[KkGgMm][Bb]?|[s|h|d|w|y]`
+* `k` `M` `G` prefixes for the International System of Units (SI) (1000^n)
+* `kB` `MB` `GB` 1024^n bytes
+* `ms` `s` `min` `h` `d` `w` `y` number in seconds .
 
 ```nacl
-file_max_size 2mb; # 2 * 1024 * 1024
+file_max_size 10MB; # 10 * 1000^6
+file_ttl 90min; # 90 * 60
 ```
 
 #### Macros
