@@ -69,7 +69,11 @@ class Parser
                     }
                     $this->consumeOptional(':') || $this->consumeOptional('=');
                     $val           = $this->parseValue();
-                    $object[$name] = $val;
+                    if (is_array($val) && isset($object[$name]) && is_array($object[$name])) {
+                        $object[$name] = $this->deepMerge($object[$name], $val);
+                    } else {
+                        $object[$name] = $val;
+                    }
                     $separator     = $this->consumeOptional(',') || $this->consumeOptional(';');
                     $continue      = is_array($val) || $separator;
                     break;

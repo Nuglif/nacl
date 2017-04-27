@@ -19,6 +19,7 @@
             "host": {
                 "host": "hostname \nc'est\tune chaine \"longue",
                 "port": 901,
+                "scheme": "https",
                 "key1": "val",
                 "key2": "val",
                 "key3": "val",
