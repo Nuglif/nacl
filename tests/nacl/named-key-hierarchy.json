@@ -1,0 +1,9 @@
+{
+    "foo": {
+        "bar": {
+            "baz1": "qux",
+            "baz2": "qux2"
+        },
+        "lol": "haha"
+    }
+}

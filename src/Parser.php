@@ -129,10 +129,11 @@ class Parser
     }
 
     /**
-     * Value ::= String | Scalar | Variable | "{" InnerObject "}" | Array | MacroCall
+     * Value ::= {T_END_STR | T_NAME }* ( String | Scalar | Variable | "{" InnerObject "}" | Array | MacroCall )
      */
-    private function parseValue()
+    private function parseValue($required = true, &$found = true)
     {
+        $found = true;
         switch ($this->token->type) {
             case Token::T_STRING:
             case Token::T_ENCAPSED_VAR:
@@ -140,6 +141,13 @@ class Parser
                 break;
             case Token::T_END_STR;
             case Token::T_NAME:
+                $value = $this->parseScalar();
+                $required = $this->consumeOptional(':') || $this->consumeOptional('=');
+                $realValue = $this->parseValue($required, $valueIsKey);
+                if ($valueIsKey) {
+                    return [ $value => $realValue ];
+                }
+                break;
             case Token::T_BOOL:
             case Token::T_NUM:
             case Token::T_NULL:
@@ -159,7 +167,12 @@ class Parser
                 $value = $this->parseMacro();
                 break;
             default:
-                $this->syntaxError();
+                if ($required) {
+                    $this->syntaxError();
+                } else {
+                    $found = false;
+                    return;
+                }
         }
 
         return $value;
