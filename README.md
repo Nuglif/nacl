@@ -4,6 +4,8 @@ NACL is a configuration language both human and machine friendly.
 It's a JSON superset which means that JSON can be used as valid input to the NACL parser.
 NACL is heavily inspired by libucl.
 
+For the detailed grammar refer to the [EBNF](EBNF.md).
+
 ## Example
 
 ```nacl

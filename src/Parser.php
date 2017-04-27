@@ -24,6 +24,9 @@ class Parser
         $this->variables[$name] = $value;
     }
 
+    /**
+     * Nacl ::= Array | Object
+     */
     public function parse($str, $filename = 'nacl string')
     {
         $this->lexer->push($str, $filename);
@@ -51,6 +54,12 @@ class Parser
         return $this->parse(file_get_contents($file), $filename);
     }
 
+    /**
+     * Object       ::= "{" InnerObject "}" | InnerObject
+     * InnerObject  ::= [ KeyValueList [ "," | ";" ] ]
+     * KeyValueList ::= KeyValue [ [ "," | ";" ] KeyValueList ]
+     * KeyValue     ::= ( ( T_END_STR | T_NAME | T_VAR ) [ ":" | "=" ] Value ) | MacroCall
+     */
     private function parseObject()
     {
         $object = [];
@@ -86,7 +95,6 @@ class Parser
                     $continue      = $this->consumeOptional(',') || $this->consumeOptional(';');
                     break;
                 case '.':
-                    $this->nextToken();
                     $val      = $this->parseMacro($object);
                     $continue = $this->consumeOptional(';');
                     break;
@@ -100,6 +108,10 @@ class Parser
         return $object;
     }
 
+    /**
+     * Array     ::= "[" [ ValueList ] "]"
+     * ValueList ::= Value [ "," ValueList ]
+     */
     private function parseArray()
     {
         $array = [];
@@ -116,6 +128,9 @@ class Parser
         return $array;
     }
 
+    /**
+     * Value ::= String | Scalar | Variable | "{" InnerObject "}" | Array | MacroCall
+     */
     private function parseValue()
     {
         switch ($this->token->type) {
@@ -141,7 +156,6 @@ class Parser
                 $value = $this->parseArray();
                 break;
             case '.':
-                $this->nextToken();
                 $value = $this->parseMacro();
                 break;
             default:
@@ -151,6 +165,9 @@ class Parser
         return $value;
     }
 
+    /**
+     * Scalar ::= T_END_STR | T_NAME | T_BOOL | T_NUM | T_NULL
+     */
     private function parseScalar()
     {
         $value = $this->token->value;
@@ -159,6 +176,9 @@ class Parser
         return $value;
     }
 
+    /**
+     * String ::= { T_ENCAPSED_VAR | T_STRING }* T_END_STR
+     */
     private function parseString()
     {
         $value    = '';
@@ -175,7 +195,7 @@ class Parser
                 case Token::T_STRING:
                     $value .= $this->token->value;
                     break;
-            }
+             }
 
             $this->nextToken();
         } while ($continue);
@@ -183,6 +203,9 @@ class Parser
         return $value;
     }
 
+    /**
+     * Variable ::= T_VAR
+     */
     private function getVariable($name)
     {
         if (!isset($this->variables[$name])) {
@@ -194,8 +217,12 @@ class Parser
         return $this->variables[$name];
     }
 
-    private function parseMacro(&$context = null)
+    /**
+     * MacroCall ::= "." T_NAME [ "(" [ Object ] ")" ] Value
+     */
+    private function parseMacro(array &$context = null)
     {
+        $this->consume('.');
         $result = null;
 
         if ($this->token->type != Token::T_NAME) {
@@ -252,7 +279,7 @@ class Parser
         return $a1;
     }
 
-    private function doInclude($file, $options, &$context)
+    private function doInclude($file, $options, array &$context = null)
     {
         $options = array_merge([
             'required' => true,
