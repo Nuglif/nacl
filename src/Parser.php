@@ -87,7 +87,7 @@ class Parser
                     break;
                 case '.':
                     $this->nextToken();
-                    $val = $this->parseMacro($object);
+                    $val      = $this->parseMacro($object);
                     $continue = $this->consumeOptional(';');
                     break;
             }
@@ -266,6 +266,7 @@ class Parser
             if ($options['required']) {
                 $this->error('Unable to include file \'' . $file . '\'');
             }
+
             return null;
         }
         chdir($cwd);
@@ -312,7 +313,7 @@ class Parser
     private function syntaxError()
     {
         $literal = Token::getLiteral($this->token->type);
-        $value = (strlen($this->token->value) > 10) ? substr($this->token->value, 0, 10) . '...' : $this->token->value;
+        $value   = (strlen($this->token->value) > 10) ? substr($this->token->value, 0, 10) . '...' : $this->token->value;
 
         $message = 'Syntax error, unexpected \'' . $value . '\'';
         if ($literal !== $value) {
