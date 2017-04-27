@@ -116,11 +116,11 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      * @expectedException Nuglif\Nacl\ParsingException
-     * @expectedExceptionMessage Syntax error, unexpected 'baz' (T_NAME)
+     * @expectedExceptionMessage Syntax error, unexpected '10' (T_NUM)
      */
     public function testParseErrorMessageWithTokenName()
     {
-        $this->parser->parse('foo bar baz;', 'file');
+        $this->parser->parse('foo bar baz {}10;', 'file');
     }
 
     /**
