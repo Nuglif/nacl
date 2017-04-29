@@ -301,18 +301,13 @@ class Parser
             'required' => true,
         ], $options);
 
-        $cwd = getcwd();
-        if (file_exists($this->lexer->getFilename())) {
-            chdir(dirname($this->lexer->getFilename()));
-        }
-        if (!$path = realpath($file)) {
+        if (!$path = $this->resolvePath($file)) {
             if ($options['required']) {
                 $this->error('Unable to include file \'' . $file . '\'');
             }
 
             return null;
         }
-        chdir($cwd);
 
         $token = $this->token;
         $this->lexer->push(file_get_contents($path), $path);
@@ -326,6 +321,18 @@ class Parser
         $this->token = $token;
 
         return $value;
+    }
+
+    private function resolvePath($file)
+    {
+        $cwd = getcwd();
+        if (file_exists($this->lexer->getFilename())) {
+            chdir(dirname($this->lexer->getFilename()));
+        }
+        $path = realpath($file);
+        chdir($cwd);
+
+        return $path;
     }
 
     /**
