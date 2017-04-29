@@ -129,7 +129,7 @@ class Parser
     }
 
     /**
-     * Value ::= {T_END_STR | T_NAME }* ( String | Scalar | Variable | "{" InnerObject "}" | Array | MacroCall )
+     * Value ::= {T_END_STR | T_NAME }* ( String | Scalar | MathExpr | Variable | "{" InnerObject "}" | Array | MacroCall )
      */
     private function parseValue($required = true, &$found = true)
     {
@@ -141,21 +141,23 @@ class Parser
                 break;
             case Token::T_END_STR;
             case Token::T_NAME:
-                $value = $this->parseScalar();
-                $required = $this->consumeOptional(':') || $this->consumeOptional('=');
+                $value     = $this->parseScalar();
+                $required  = $this->consumeOptional(':') || $this->consumeOptional('=');
                 $realValue = $this->parseValue($required, $valueIsKey);
                 if ($valueIsKey) {
                     return [ $value => $realValue ];
                 }
                 break;
             case Token::T_BOOL:
-            case Token::T_NUM:
             case Token::T_NULL:
                 $value = $this->parseScalar();
                 break;
+            case Token::T_NUM:
             case Token::T_VAR:
-                $value = $this->getVariable($this->token->value);
-                $this->nextToken();
+            case '+':
+            case '-':
+            case '(':
+                $value = $this->parseMathExpr();
                 break;
             case '{':
                 $value = $this->parseObject();
@@ -171,6 +173,7 @@ class Parser
                     $this->syntaxError();
                 } else {
                     $found = false;
+
                     return;
                 }
         }
@@ -321,6 +324,160 @@ class Parser
         $this->consume(Token::T_EOF);
         $this->lexer->pop();
         $this->token = $token;
+
+        return $value;
+    }
+
+    /**
+     * MathExpr ::= OrOperand { "|" OrOperand }*
+     */
+    private function parseMathExpr()
+    {
+        $value = $this->parseOrOperand();
+
+        while ($this->token->type === '|') {
+            $this->nextToken();
+            $value |= $this->parseOrOperand();
+        }
+
+        return $value;
+    }
+
+    /**
+     * OrOperand ::= AndOperand { "&" AndOperand }*
+     */
+    public function parseOrOperand()
+    {
+        $value = $this->parseAndOperand();
+
+        while ($this->token->type === '&') {
+            $this->nextToken();
+            $value &= $this->parseAndOperand();
+        }
+
+        return $value;
+    }
+
+    /**
+     * AndOperand ::= ShiftOperand { ( "<<" | ">>" ) ShiftOperand }*
+     */
+    public function parseAndOperand()
+    {
+        $value = $this->parseShiftOperand();
+
+        $continue = true;
+        do {
+            switch ($this->token->type) {
+                case '<<':
+                    $this->nextToken();
+                    $value <<= $this->parseShiftOperand();
+                    break;
+                case '>>':
+                    $this->nextToken();
+                    $value >>= $this->parseShiftOperand();
+                default:
+                    $continue = false;
+            }
+        } while ($continue);
+
+        return $value;
+    }
+
+    /**
+     * ShiftOperand ::= MathTerm { ( "+" | "-" ) MathTerm }*
+     */
+    private function parseShiftOperand()
+    {
+        $value = $this->parseMathTerm();
+
+        $continue = true;
+        do {
+            switch ($this->token->type) {
+                case '+':
+                    $this->nextToken();
+                    $value += $this->parseMathTerm();
+                    break;
+                case '-':
+                    $this->nextToken();
+                    $value -= $this->parseMathTerm();
+                    break;
+                default:
+                    $continue = false;
+            }
+        } while ($continue);
+
+        return $value;
+    }
+
+    /**
+     * MathTerm ::= MathFactor { ( ( "*" | "%" | "/" ) MathFactor ) | ( "(" MathExpr ")" ) }*
+     */
+    private function parseMathTerm()
+    {
+        $value = $this->parseMathFactor();
+
+        $continue = true;
+        do {
+            switch ($this->token->type) {
+                case '*':
+                    $this->nextToken();
+                    $value *= $this->parseMathFactor();
+                    break;
+                case '(':
+                    $this->nextToken();
+                    $value *= $this->parseMathExpr();
+                    $this->consume(')');
+                    break;
+                case '%':
+                    $this->nextToken();
+                    $value %= $this->parseMathExpr();
+                    break;
+                case '/':
+                    $this->nextToken();
+                    $value /= $this->parseMathFactor();
+                    break;
+                default:
+                    $continue = false;
+            }
+        } while ($continue);
+
+        return $value;
+    }
+
+    /**
+     * MathFactor ::= ( "(" MathExpr ")" ) | T_NUM | T_VAR | ( ("+"|"-") MathTerm ) [ "^" MathFactor ]
+     */
+    private function parseMathFactor()
+    {
+        switch ($this->token->type) {
+            case '(':
+                $this->nextToken();
+                $value = $this->parseMathExpr();
+                $this->consume(')');
+                break;
+            case Token::T_NUM:
+                $value = $this->token->value;
+                $this->nextToken();
+                break;
+            case Token::T_VAR:
+                $value = $this->getVariable($this->token->value);
+                $this->nextToken();
+                break;
+            case '+':
+                $this->nextToken();
+                $value = $this->parseMathTerm();
+                break;
+            case '-':
+                $this->nextToken();
+                $value = -$this->parseMathTerm();
+                break;
+            default:
+                $this->syntaxError();
+        }
+
+        if ($this->consumeOptional('^')) {
+            $value **= $this->parseMathFactor(true);
+        }
 
         return $value;
     }

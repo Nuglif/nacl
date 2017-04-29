@@ -13,12 +13,12 @@ class Lexer extends AbstractLexer
     const REGEX_COMMENT_ML  = '/\*';
     const REGEX_NAME        = '[A-Za-z_][A-Za-z0-9_]*';
     const REGEX_VAR         = '?:\${([A-Za-z0-9_]+)}';
-    const REGEX_NUM         = '[-+]?(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:[eE](?:\+|-)?[0-9]+)?(?:m(?:in|s)|[KkGgMm][Bb]?|[s|h|d|w|y])?';
+    const REGEX_NUM         = '(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:[eE](?:\+|-)?[0-9]+)?(?:m(?:in|s)|[KkGgMm][Bb]?|[s|h|d|w|y])?';
     const REGEX_DQUOTE      = '"';
     const REGEX_HEREDOC     = '?:<<<([A-Za-z0-9_]+)\n';
     const REGEX_BOOL        = '(?:true|false|yes|no|on|off)\b';
     const REGEX_NULL        = 'null\b';
-    const REGEX_TOKEN       = '[\[\]=:{};,.()]';
+    const REGEX_TOKEN       = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
     const REGEX_ANY         = '.';
 
     private $textBuffer;
@@ -67,9 +67,6 @@ class Lexer extends AbstractLexer
                 self::REGEX_NAME    => function () {
                     return Token::T_NAME;
                 },
-                self::REGEX_TOKEN   => function ($yylval) {
-                    return $yylval;
-                },
                 self::REGEX_HEREDOC => function (&$yylval) {
                     $needle = "\n" . $yylval;
                     $pos    = strpos($this->content, $needle, $this->count);
@@ -83,6 +80,9 @@ class Lexer extends AbstractLexer
                     $this->count += strlen($yylval) + strlen($needle);
 
                     return Token::T_END_STR;
+                },
+                self::REGEX_TOKEN   => function ($yylval) {
+                    return $yylval;
                 },
                 self::REGEX_VAR => function () {
                     return Token::T_VAR;
