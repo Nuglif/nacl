@@ -299,25 +299,36 @@ class Parser
     {
         $options = array_merge([
             'required' => true,
+            'glob'     => false,
         ], $options);
 
-        if (!$path = $this->resolvePath($file)) {
-            if ($options['required']) {
-                $this->error('Unable to include file \'' . $file . '\'');
+        if ($options['glob']) {
+            $files = $this->glob($file);
+        } else {
+            if (!$path = $this->resolvePath($file)) {
+                if ($options['required']) {
+                    $this->error('Unable to include file \'' . $file . '\'');
+                }
+
+                return null;
             }
 
-            return null;
+            $files = [ $path ];
         }
 
         $token = $this->token;
-        $this->lexer->push(file_get_contents($path), $path);
-        $this->nextToken();
-        $value = $this->parseObject();
-        if (is_array($value) && is_array($context)) {
-            $context = $this->deepMerge($context, $value);
+
+        foreach ($files as $file) {
+            $this->lexer->push(file_get_contents($file), $path);
+            $this->nextToken();
+            $value = $this->parseObject();
+            if (is_array($value) && is_array($context)) {
+                $context = $this->deepMerge($context, $value);
+            }
+            $this->consume(Token::T_EOF);
+            $this->lexer->pop();
         }
-        $this->consume(Token::T_EOF);
-        $this->lexer->pop();
+
         $this->token = $token;
 
         return $value;
@@ -329,10 +340,22 @@ class Parser
         if (file_exists($this->lexer->getFilename())) {
             chdir(dirname($this->lexer->getFilename()));
         }
-        $path = realpath($file);
+        $file = realpath($file);
         chdir($cwd);
 
-        return $path;
+        return $file;
+    }
+
+    private function glob($pattern)
+    {
+        $cwd = getcwd();
+        if (file_exists($this->lexer->getFilename())) {
+            chdir(dirname($this->lexer->getFilename()));
+        }
+        $files = array_map('realpath', glob($pattern));
+        chdir($cwd);
+
+        return $files;
     }
 
     /**
