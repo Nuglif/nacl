@@ -319,7 +319,7 @@ class Parser
         $token = $this->token;
 
         foreach ($files as $file) {
-            $this->lexer->push(file_get_contents($file), $path);
+            $this->lexer->push(file_get_contents($file), $file);
             $this->nextToken();
             $value = $this->parseObject();
             if (is_array($value) && is_array($context)) {
