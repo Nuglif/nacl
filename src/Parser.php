@@ -16,6 +16,9 @@ class Parser
 
     public function registerMacro(MacroInterface $macro)
     {
+        if ($macro instanceof ParserAware) {
+            $macro->setParser($this);
+        }
         $this->macro[$macro->getName()] = [ $macro, 'execute' ];
     }
 
@@ -29,6 +32,7 @@ class Parser
      */
     public function parse($str, $filename = 'nacl string')
     {
+        $token = $this->token;
         $this->lexer->push($str, $filename);
         $this->nextToken();
 
@@ -40,6 +44,7 @@ class Parser
 
         $this->consume(Token::T_EOF);
         $this->lexer->pop();
+        $this->token = $token;
 
         return $result;
     }
@@ -222,7 +227,7 @@ class Parser
     /**
      * Variable ::= T_VAR
      */
-    private function getVariable($name)
+    public function getVariable($name)
     {
         if (!isset($this->variables[$name])) {
             trigger_error('Undefined variable ' . $name);
@@ -334,7 +339,7 @@ class Parser
         return $value;
     }
 
-    private function resolvePath($file)
+    public function resolvePath($file)
     {
         $cwd = getcwd();
         if (file_exists($this->lexer->getFilename())) {
@@ -549,7 +554,7 @@ class Parser
         $this->error($message);
     }
 
-    private function error($message)
+    public function error($message)
     {
         throw new ParsingException($message, $this->lexer->getFilename(), $this->lexer->getLine());
     }
