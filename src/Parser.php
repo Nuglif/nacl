@@ -54,6 +54,10 @@ class Parser
         $filename = realpath($file);
         if (!$filename) {
             throw new \InvalidArgumentException('File not found: ' . $file);
+        } elseif (!is_file($filename)) {
+            throw new \InvalidArgumentException($file . ' is not a file.');
+        } elseif (!is_readable($filename)) {
+            throw new \InvalidArgumentException($file . ' is not readbale');
         }
 
         return $this->parse(file_get_contents($file), $filename);
