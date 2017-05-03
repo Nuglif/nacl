@@ -25,5 +25,8 @@
     "test": [
       "phpunit"
     ]
-  }
+  },
+  "bin": [
+    "nacl"
+  ]
 }
