@@ -9,30 +9,6 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 {
     private $parser;
 
-    public function setUp()
-    {
-        $lexer        = new Lexer();
-        $this->parser = new Parser($lexer);
-
-        $this->parser->registerMacro(new Macros\Callback('vault', function ($p, $a = []) {
-            return 'Fetch from vault=' . $p . ' or default' . $a['default'];
-        }));
-
-        $this->parser->registerMacro(new Macros\Callback('consul', function ($p, $a = []) {
-            return 'Fetch from consul' . $p;
-        }));
-
-        $this->parser->registerMacro(new Macros\Callback('json_encode', function ($p) {
-            return json_encode($p);
-        }));
-
-        $this->parser->registerMacro(new Macros\Env);
-        $this->parser->registerMacro(new Macros\Constant);
-
-        $this->parser->setVariable('BAR', 'bar');
-        $this->parser->setVariable('PREFIX', 'prefix');
-    }
-
     public static function getJsonFiles()
     {
         $files = glob(__DIR__ . '/json/*.json');
@@ -50,7 +26,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         $this->assertSame(
             json_decode(file_get_contents($jsonFile), true),
-            $this->parser->parseFile($jsonFile)
+            Nacl::parseFile($jsonFile)
         );
     }
 
@@ -71,6 +47,22 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testNacl($naclFile, $jsonFile)
     {
+        $this->parser = Nacl::createParser();
+
+        $this->parser->registerMacro(new Macros\Callback('vault', function ($p, $a = []) {
+            return 'Fetch from vault=' . $p . ' or default' . $a['default'];
+        }));
+
+        $this->parser->registerMacro(new Macros\Callback('consul', function ($p, $a = []) {
+            return 'Fetch from consul' . $p;
+        }));
+
+        $this->parser->registerMacro(new Macros\Callback('json_encode', function ($p) {
+            return json_encode($p);
+        }));
+
+        $this->parser->setVariable('BAR', 'bar');
+        $this->parser->setVariable('PREFIX', 'prefix');
         $result = $this->parser->parseFile($naclFile);
         try {
             $this->assertEquals(
@@ -90,7 +82,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnterminatedString()
     {
-        $this->parser->parse('foo="bar');
+        Nacl::parse('foo="bar');
     }
 
     /**
@@ -100,7 +92,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnterminatedHeredoc()
     {
-        $this->parser->parse("foo=<<<TEST\n");
+        Nacl::parse("foo=<<<TEST\n");
     }
 
     /**
@@ -110,7 +102,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testUnterminatedMultilineComment()
     {
-        $this->parser->parse('/*');
+        Nacl::parse('/*');
     }
 
     /**
@@ -120,7 +112,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseErrorMessageWithTokenName()
     {
-        $this->parser->parse('foo bar baz {}10;', 'file');
+        Nacl::parse('foo bar baz {}10;', 'file');
     }
 
     /**
@@ -130,7 +122,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testParseErrorMesageWithoutTokenName()
     {
-        $this->parser->parse('foo;', 'file');
+        Nacl::parse('foo;', 'file');
     }
 
     /**
@@ -139,6 +131,6 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function parsingUnexistingFileThrowInvalidArgumentException()
     {
-        $this->parser->parseFile('error');
+        Nacl::parseFile('error');
     }
 }
