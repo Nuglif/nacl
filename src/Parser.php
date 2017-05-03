@@ -376,7 +376,7 @@ class Parser
     /**
      * OrOperand ::= AndOperand { "&" AndOperand }*
      */
-    public function parseOrOperand()
+    private function parseOrOperand()
     {
         $value = $this->parseAndOperand();
 
@@ -391,7 +391,7 @@ class Parser
     /**
      * AndOperand ::= ShiftOperand { ( "<<" | ">>" ) ShiftOperand }*
      */
-    public function parseAndOperand()
+    private function parseAndOperand()
     {
         $value = $this->parseShiftOperand();
 
