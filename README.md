@@ -115,6 +115,42 @@ file_max_size 10MB; # 10 * 1000^6
 file_ttl 90min; # 90 * 60
 ```
 
+#### Deep merge
+
+Object with the same name are deep merged.
+
+```nacl
+foo {
+	a: true;
+	b: { c: "c"}
+}
+foo {
+	a: false;
+	b: { x: "x" }
+}
+```
+
+is equal to
+```nacl
+{
+	"foo": {
+		"a": false,
+		"b": {
+			"c": "c",
+			"x": "x"
+		}
+	}
+}
+```
+#### Include
+
+`.include` predefined macro is similar to C include. It will be similar to getting the content
+of the included file and copy pasting it at the same place as the include.
+
+```nacl
+.include "file.conf";
+```
+
 #### Macros
 You can write your own external macros.
 
