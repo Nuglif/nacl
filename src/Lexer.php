@@ -24,10 +24,10 @@ class Lexer extends AbstractLexer
     private $textBuffer;
     private $_mb_convert_encoding;
 
-    public function __construct(...$args)
+    public function __construct()
     {
         $this->_mb_convert_encoding  = function_exists('mb_convert_encoding');
-        parent::__construct(...$args);
+        parent::__construct();
     }
 
     protected function getRules()
