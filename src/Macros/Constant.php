@@ -17,6 +17,10 @@ class Constant implements MacroInterface
             throw new \InvalidArgumentException('Constant parameter must be a string');
         }
 
+        if (!defined($parameter) && isset($options['default'])) {
+            return $options['default'];
+        }
+
         return constant($parameter);
     }
 }

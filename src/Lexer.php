@@ -50,7 +50,7 @@ class Lexer extends AbstractLexer
                     $this->textBuffer = '';
                 },
                 self::REGEX_BOOL    => function (&$yylval) {
-                    $yylval = $this->stringToBool($yylval);
+                    $yylval = TypeCaster::toBool($yylval);
 
                     return Token::T_BOOL;
                 },
@@ -60,7 +60,7 @@ class Lexer extends AbstractLexer
                     return Token::T_NULL;
                 },
                 self::REGEX_NUM     => function (&$yylval) {
-                    $yylval = $this->stringToNum($yylval);
+                    $yylval = TypeCaster::toNum($yylval);
 
                     return Token::T_NUM;
                 },
@@ -177,65 +177,5 @@ class Lexer extends AbstractLexer
         }
 
         return '';
-    }
-
-    private function stringToNum($val)
-    {
-        $f = (float) $val;
-        $i = (int) $val;
-        if ($i == $f) {
-            $res = $i;
-        } else {
-            $res = $f;
-        }
-
-        if (preg_match('/[^0-9]*$/', strtolower($val), $matches)) {
-            switch ($matches[0]) {
-                case 'g':
-                    $res *= 1000;
-                case 'm':
-                    $res *= 1000;
-                case 'k':
-                    $res *= 1000;
-                    break;
-                case 'gb':
-                    $res *= 1024;
-                case 'mb':
-                    $res *= 1024;
-                case 'kb':
-                    $res *= 1024;
-                    break;
-                case 'y':
-                    $res *= 60 * 60 * 24 * 365;
-                    break;
-                case 'w':
-                    $res *= 7;
-                case 'd':
-                    $res *= 24;
-                case 'h':
-                    $res *= 60;
-                case 'min':
-                    $res *= 60;
-                    break;
-                case 'ms':
-                    $res /= 1000;
-            }
-        }
-
-        return $res;
-    }
-
-    private function stringToBool($val)
-    {
-        switch ($val) {
-            case 'true':
-            case 'yes':
-            case 'on':
-                return true;
-            case 'false':
-            case 'no':
-            case 'off':
-                return false;
-        }
     }
 }
