@@ -159,7 +159,7 @@ home_dir = .env "HOME";
 ```
 Macro can receive optional arguments
 ```
-foobar = .consul (required: false, type: bool) "foo/bar";
+foobar = .consul (default: false, type: bool) "foo/bar";
 ```
 
 To create your macro you must implement the `Nuglif\Nacl\MacroInterface` interface.
