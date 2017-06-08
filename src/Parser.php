@@ -105,7 +105,7 @@ class Parser
                     break;
                 case '.':
                     $val      = $this->parseMacro($object);
-                    $continue = $this->consumeOptional(';');
+                    $continue      = $this->consumeOptional(',') || $this->consumeOptional(';');
                     break;
             }
         } while ($continue);
