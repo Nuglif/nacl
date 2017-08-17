@@ -1,0 +1,18 @@
+{
+    "coma_with_no_end": [
+        "foo",
+        "bar"
+    ],
+    "coma_with_end": [
+        "foo",
+        "bar"
+    ],
+    "semi_colon_with_end": [
+        "foo",
+        "bar"
+    ],
+    "semi_colon_no_end": [
+        "foo",
+        "bar"
+    ]
+}

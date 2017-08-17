@@ -129,7 +129,7 @@ class Parser
         $continue = true;
         while ($continue && ']' !== $this->token->type) {
             $array[]  = $this->parseValue();
-            $continue = $this->consumeOptional(',');
+            $continue = $this->consumeOptional(',') || $this->consumeOptional(';');
         }
 
         $this->consume(']');
