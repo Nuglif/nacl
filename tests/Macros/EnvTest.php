@@ -41,8 +41,9 @@ class EnvTest extends \PHPUnit\Framework\TestCase
      */
     public function executeWillForceNumTypeIfDefined()
     {
-        putenv('FOO=1k');
-        $this->assertSame(1000, $this->macro->execute('FOO', [ 'type' => 'num' ]));
+        putenv('FOO=10.1');
+        $this->assertSame(10.1, $this->macro->execute('FOO', [ 'type' => 'num' ]));
+        $this->assertSame(10.1, $this->macro->execute('FOO', [ 'type' => 'numeric' ]));
     }
 
     /**
@@ -52,6 +53,26 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     {
         putenv('FOO=true');
         $this->assertTrue($this->macro->execute('FOO', [ 'type' => 'bool' ]));
+        $this->assertTrue($this->macro->execute('FOO', [ 'type' => 'boolean' ]));
     }
 
+    /**
+     * @test
+     */
+    public function executeWillForceIntTypeIfDefined()
+    {
+        putenv('FOO=10.1');
+        $this->assertSame(10, $this->macro->execute('FOO', [ 'type' => 'int' ]));
+        $this->assertSame(10, $this->macro->execute('FOO', [ 'type' => 'integer' ]));
+    }
+
+    /**
+     * @test
+     * @expectedException InvalidArgumentException
+     */
+    public function executeWillThrowInvalidArgumentExceptionIfTypeIsUnknown()
+    {
+        putenv('FOO=foo');
+        $this->macro->execute('FOO', [ 'type' => 'unknown' ]);
+    }
 }

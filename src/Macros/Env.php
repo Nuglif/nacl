@@ -31,11 +31,19 @@ class Env implements MacroInterface
     {
         switch($type) {
             case 'bool':
+            case 'boolean':
                 return TypeCaster::toBool($value);
+            case 'int':
+            case 'integer':
+                return (int) TypeCaster::toNum($value);
             case 'num':
+            case 'numeric':
                 return TypeCaster::toNum($value);
-            default:
+            case 'str':
+            case 'string':
                 return $value;
+            default:
+                throw new \InvalidArgumentException('Unknown type: ' . $type);
         }
     }
 }
