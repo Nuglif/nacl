@@ -80,6 +80,7 @@ class Parser
             switch ($this->token->type) {
                 case Token::T_END_STR:
                     $name = $this->parseString();
+                    /* No break */
                 case Token::T_NAME:
                     if (null === $name) {
                         $name = $this->token->value;
@@ -220,7 +221,7 @@ class Parser
                 case Token::T_STRING:
                     $value .= $this->token->value;
                     break;
-             }
+            }
 
             $this->nextToken();
         } while ($continue);

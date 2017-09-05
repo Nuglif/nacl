@@ -45,7 +45,9 @@ abstract class AbstractLexer
                 $this->error(sprintf('Unexpected character "%s"', $this->content[$this->count]));
             }
 
-            for ($i = 1; '' === $matches[$i]; ++$i);
+            for ($i = 1; '' === $matches[$i];
+            ++$i) {
+            }
             $this->count += strlen($matches[0]);
             $this->line += substr_count($matches[0], "\n");
         } else {

@@ -68,7 +68,7 @@ class Dumper
                     return self::STRING_DELIM . $var . self::STRING_DELIM;
                 default:
                     return $var;
-             }
+            }
         }
 
         $find        = array(null, '\\', '"');

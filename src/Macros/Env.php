@@ -29,7 +29,7 @@ class Env implements MacroInterface
 
     private function cast($value, $type)
     {
-        switch($type) {
+        switch ($type) {
             case 'bool':
             case 'boolean':
                 return TypeCaster::toBool($value);

@@ -14,7 +14,8 @@
   },
   "require-dev": {
     "ext-json": "*",
-    "phpunit/phpunit": "@stable"
+    "phpunit/phpunit": "@stable",
+    "squizlabs/php_codesniffer": "@stable"
   },
   "autoload": {
     "psr-4": {

@@ -22,11 +22,11 @@ class Lexer extends AbstractLexer
     const REGEX_ANY         = '.';
 
     private $textBuffer;
-    private $_mb_convert_encoding;
+    private $mb_convert_encoding;
 
     public function __construct()
     {
-        $this->_mb_convert_encoding  = function_exists('mb_convert_encoding');
+        $this->mb_convert_encoding  = function_exists('mb_convert_encoding');
         parent::__construct();
     }
 
@@ -121,7 +121,7 @@ class Lexer extends AbstractLexer
                             $utf8_code = substr($this->content, $this->count, 4);
                             if (preg_match('/[A-Fa-f0-9]{4,4}/', $utf8_code)) {
                                 $utf16 = chr(hexdec($utf8_code[0] . $utf8_code[1])) . chr(hexdec($utf8_code[2] . $utf8_code[3]));
-                                $this->textBuffer .= $this->utf16_to_utf8($utf16);
+                                $this->textBuffer .= $this->utf16ToUtf8($utf16);
                                 $this->count += 4;
                                 break;
                             }
@@ -154,9 +154,9 @@ class Lexer extends AbstractLexer
         ];
     }
 
-    private function utf16_to_utf8($utf16)
+    private function utf16ToUtf8($utf16)
     {
-        if ($this->_mb_convert_encoding) {
+        if ($this->mb_convert_encoding) {
             return mb_convert_encoding($utf16, 'UTF-8', 'UTF-16');
         }
 
