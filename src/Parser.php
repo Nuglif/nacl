@@ -414,6 +414,7 @@ class Parser
                 case '>>':
                     $this->nextToken();
                     $value >>= $this->parseShiftOperand();
+                    break;
                 default:
                     $continue = false;
             }
