@@ -148,7 +148,7 @@ class Parser
             case Token::T_ENCAPSED_VAR:
                 $value = $this->parseString();
                 break;
-            case Token::T_END_STR;
+            case Token::T_END_STR:
             case Token::T_NAME:
                 $value     = $this->parseScalar();
                 $required  = $this->consumeOptional(':') || $this->consumeOptional('=');
