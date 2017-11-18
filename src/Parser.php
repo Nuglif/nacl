@@ -234,13 +234,20 @@ class Parser
      */
     public function getVariable($name)
     {
-        if (!isset($this->variables[$name])) {
-            trigger_error('Undefined variable ' . $name);
+        switch ($name) {
+            case '__FILE__':
+                return realpath($this->lexer->getFilename());
+            case '__DIR__':
+                return dirname(realpath($this->lexer->getFilename()));
+            default:
+                if (!isset($this->variables[$name])) {
+                    trigger_error('Undefined variable ' . $name);
 
-            return '';
+                    return '';
+                }
+
+                return $this->variables[$name];
         }
-
-        return $this->variables[$name];
     }
 
     /**
