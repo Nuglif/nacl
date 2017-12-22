@@ -118,11 +118,17 @@ class Lexer extends AbstractLexer
                             $this->textBuffer .= $yylval;
                             break;
                         case 'u':
-                            $utf8_code = substr($this->content, $this->count, 4);
-                            if (preg_match('/[A-Fa-f0-9]{4,4}/', $utf8_code)) {
-                                $utf16 = chr(hexdec($utf8_code[0] . $utf8_code[1])) . chr(hexdec($utf8_code[2] . $utf8_code[3]));
-                                $this->textBuffer .= $this->utf16ToUtf8($utf16);
+                            $utfCode = substr($this->content, $this->count, 4);
+                            if (preg_match('/[A-Fa-f0-9]{4,4}/', $utfCode)) {
+                                $utf = hexdec($utfCode);
                                 $this->count += 4;
+                                // UTF-32 ?
+                                if ($utf >= 0xD800 && $utf <= 0xDBFF && preg_match('/^\\\\u[dD][c-fC-F][0-9a-fA-F][0-9a-fA-F]/', substr($this->content, $this->count, 6), $matches)) {
+                                    $utf_hi = hexdec(substr($matches[0], -4));
+                                    $utf = (($utf & 0x3FF) << 10) + ($utf_hi & 0x3FF) + 0x10000;
+                                    $this->count += 6;
+                                }
+                                $this->textBuffer .= $this->fromCharCode($utf);
                                 break;
                             }
                             /* No break */
@@ -154,28 +160,26 @@ class Lexer extends AbstractLexer
         ];
     }
 
-    private function utf16ToUtf8($utf16)
+    private function fromCharCode($bytes)
     {
-        if ($this->mb_convert_encoding) {
-            return mb_convert_encoding($utf16, 'UTF-8', 'UTF-16');
-        }
-
-        $bytes = (ord($utf16{0}) << 8) | ord($utf16{1});
-
         switch (true) {
             case ((0x7F & $bytes) == $bytes):
-                return chr(0x7F & $bytes);
+                return chr($bytes);
 
             case (0x07FF & $bytes) == $bytes:
-                return chr(0xC0 | (($bytes >> 6) & 0x1F))
-                    . chr(0x80 | ($bytes & 0x3F));
+                return chr(0xc0 | ($bytes >> 6))
+                     . chr(0x80 | ($bytes & 0x3F));
 
             case (0xFFFF & $bytes) == $bytes:
-                return chr(0xE0 | (($bytes >> 12) & 0x0F))
-                    . chr(0x80 | (($bytes >> 6) & 0x3F))
-                    . chr(0x80 | ($bytes & 0x3F));
-        }
+                return chr(0xe0 | ($bytes >> 12))
+                     . chr(0x80 | (($bytes >> 6) & 0x3F))
+                     . chr(0x80 | ($bytes & 0x3F));
 
-        return '';
+            default:
+                return chr(0xF0 | ($bytes >> 18))
+                     . chr(0x80 | (($bytes >> 12) & 0x3F))
+                     . chr(0x80 | (($bytes >> 6) & 0x3F))
+                     . chr(0x80 | ($bytes & 0x3F));
+        }
     }
 }
