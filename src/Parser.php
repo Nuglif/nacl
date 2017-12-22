@@ -382,8 +382,7 @@ class Parser
     {
         $value = $this->parseOrOperand();
 
-        while ($this->token->type === '|') {
-            $this->nextToken();
+        while ($this->consumeOptional('|')) {
             $value |= $this->parseOrOperand();
         }
 
@@ -397,8 +396,7 @@ class Parser
     {
         $value = $this->parseAndOperand();
 
-        while ($this->token->type === '&') {
-            $this->nextToken();
+        while ($this->consumeOptional('&')) {
             $value &= $this->parseAndOperand();
         }
 
@@ -524,7 +522,7 @@ class Parser
         }
 
         if ($this->consumeOptional('^')) {
-            $value **= $this->parseMathFactor(true);
+            $value **= $this->parseMathFactor();
         }
 
         return $value;
