@@ -39,32 +39,27 @@ abstract class AbstractLexer
 
     public function yylex()
     {
-        retry:
-        if (isset($this->content[$this->count])) {
-            if (!preg_match($this->regexes[$this->state], $this->content, $matches, null, $this->count)) {
-                $this->error(sprintf('Unexpected character "%s"', $this->content[$this->count]));
+        do {
+            if (isset($this->content[$this->count])) {
+                if (!preg_match($this->regexes[$this->state], $this->content, $matches, null, $this->count)) {
+                    $this->error(sprintf('Unexpected character "%s"', $this->content[$this->count]));
+                }
+                for ($i = 1; '' === $matches[$i]; ++$i) {
+                }
+                $this->count += strlen($matches[0]);
+                $this->line += substr_count($matches[0], "\n");
+            } else {
+                $i       = 0;
+                $matches = [ '' ];
             }
 
-            for ($i = 1; '' === $matches[$i];
-            ++$i) {
+            if ($this->tokenMaps[$this->state][$i - 1]) {
+                $callback = $this->tokenMaps[$this->state][$i - 1];
+                if ($token = $callback($matches[$i])) {
+                    return new Token($token, $matches[$i]);
+                }
             }
-            $this->count += strlen($matches[0]);
-            $this->line += substr_count($matches[0], "\n");
-        } else {
-            $i       = 0;
-            $matches = [ '' ];
-        }
-
-        if ($this->tokenMaps[$this->state][$i - 1]) {
-            $callback = $this->tokenMaps[$this->state][$i - 1];
-            if ($token = $callback($matches[$i])) {
-                return new Token($token, $matches[$i]);
-            }
-        }
-
-        if ($i) {
-            goto retry;
-        }
+        } while ($i);
     }
 
     protected function error($errorMessage)

@@ -62,7 +62,7 @@ class Parser
         } elseif (!is_file($filename)) {
             throw new \InvalidArgumentException($file . ' is not a file.');
         } elseif (!is_readable($filename)) {
-            throw new \InvalidArgumentException($file . ' is not readbale');
+            throw new \InvalidArgumentException($file . ' is not readable');
         }
 
         return $this->parse(file_get_contents($file), $filename);
