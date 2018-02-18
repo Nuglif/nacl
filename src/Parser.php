@@ -16,9 +16,14 @@ class Parser
 
     public function registerMacro(MacroInterface $macro)
     {
+        if (isset($this->macro[$macro->getName()])) {
+            throw new Exception('Macro with the same name already registered.');
+        }
+
         if ($macro instanceof ParserAware) {
             $macro->setParser($this);
         }
+
         $this->macro[$macro->getName()] = [ $macro, 'execute' ];
     }
 
