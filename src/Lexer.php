@@ -22,11 +22,9 @@ class Lexer extends AbstractLexer
     const REGEX_ANY         = '.';
 
     private $textBuffer;
-    private $mb_convert_encoding;
 
     public function __construct()
     {
-        $this->mb_convert_encoding  = function_exists('mb_convert_encoding');
         parent::__construct();
     }
 
