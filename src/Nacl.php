@@ -26,6 +26,9 @@ class Nacl
 
     public static function dump($var)
     {
-        return (new Dumper)->dump($var);
+        return (new Dumper(
+            Dumper::PRETTY_PRINT |
+            Dumper::SHORT_SINGLE_ELEMENT
+        ))->dump($var);
     }
 }

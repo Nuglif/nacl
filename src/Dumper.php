@@ -4,59 +4,165 @@ namespace Nuglif\Nacl;
 
 class Dumper
 {
-    const STRING_DELIM  = '"';
-    const NEW_LINE      = "\n";
-    const LINE_END      = ";\n";
+    const PRETTY_PRINT               = 1 << 1;
+    const SEPARATOR_AFTER_NON_SCALAR = 1 << 2;
+    const SHORT_SINGLE_ELEMENT       = 1 << 3;
+    const NO_TRAILING_SEPARATOR      = 1 << 4;
+    const ROOT_BRACES                = 1 << 5;
+    const QUOTE_STR                  = 1 << 6;
+
+    /**
+     * @var string
+     */
+    private $indentStr     = '  ';
+
+    /**
+     * @var string
+     */
+    private $assign        = ' ';
+
+    /**
+     * @var string
+     */
+    private $separator     = ';';
+
+    /**
+     * @var string
+     */
+    private $listSeparator = ',';
+
+    /**
+     * @var int
+     */
+    private $depth = 0;
+
+    /**
+     * @var
+     */
+    private $options;
+
+    public function __construct($options = 0)
+    {
+        $this->options = $options;
+    }
+
+    public function setIndent($str)
+    {
+        $this->indentStr = $str;
+    }
+
+    public function setAssign($str)
+    {
+        $this->assign = $str;
+    }
+
+    public function setSeparator($str)
+    {
+        $this->separator = $str;
+    }
+
+    public function setListSeparator($str)
+    {
+        $this->listSeparator = $str;
+    }
 
     public function dump($var)
     {
-        return $this->internalDump($var);
+        return $this->dumpVar($var, !$this->hasOption(self::ROOT_BRACES));
     }
 
-    private function internalDump($var, $level = 0, $root = true)
+    private function dumpVar($var, $root = false)
     {
-        $indent      = '  ';
-        $out         = '';
-
         $varType = gettype($var);
-
         switch ($varType) {
             case 'array':
-                $out .= $root ? '' : '{' . self::NEW_LINE;
-                foreach ($var as $key => $value) {
-                    if (is_string($key)) {
-                        $key = $this->safeString($key);
-                    }
-
-                    $str_value = $this->internalDump($value, $level + 1, false);
-                    $out .= str_repeat($indent, $level) . $key . ' ' . $str_value . (is_array($value) ? self::NEW_LINE : self::LINE_END);
-                }
-                $out .= $root ? '' : str_repeat($indent, $level - 1) . '}';
-                break;
-
+                return $this->dumpArray($var, $root);
             case 'string':
-                $out .= $this->safeString($var);
-                break;
-
+                return $this->dumpString($var);
             case 'integer':
             case 'double':
             case 'boolean':
-                $out = var_export($var, true);
-                break;
+                return var_export($var, true);
             case 'NULL':
-                $out = 'null';
-                break;
-
-            default:
-                throw \InvalidArgumentException("Unable to dump '${varType}' to NACL");
+                return 'null';
         }
 
         return $out;
     }
 
-    private function safeString($var)
+    private function dumpArray(array $var, $root = false)
     {
-        if (preg_match('#^(' . Lexer::REGEX_NAME . ')$#A', $var)) {
+        if ($this->isAssociativeArray($var)) {
+            return $this->dumpAssociativeArray($var, $root);
+        }
+
+        return $this->dumpIndexedArray($var);
+    }
+
+    private function dumpAssociativeArray(array $var, $root = false)
+    {
+        $inline = $this->hasOption(self::SHORT_SINGLE_ELEMENT) && (1 === count($var));
+        $str    = '';
+
+        if (!$root && !$inline) {
+            $str .= '{' . $this->eol();
+            ++$this->depth;
+        }
+
+        $remainingElements = count($var);
+
+        foreach ($var as $key => $value) {
+            --$remainingElements;
+
+            $requireSep = !($this->hasOption(self::NO_TRAILING_SEPARATOR) && !$inline && !$remainingElements) && (
+                !is_array($value) ||
+                (
+                    $this->hasOption(self::SEPARATOR_AFTER_NON_SCALAR) &&
+                    (!$this->hasOption(self::SHORT_SINGLE_ELEMENT) || 1 !== count($value) || is_int(key($value)))
+                )
+            );
+
+            $str .= ($inline ? '' : $this->indent())
+                . $this->dumpString($key)
+                . $this->assign
+                . $this->dumpVar($value)
+                . ($requireSep ? $this->separator : '')
+                . ($inline ? '' : $this->eol());
+        }
+
+        if (!$root && !$inline) {
+            --$this->depth;
+            $str .= $this->indent() . '}';
+        }
+
+        return $str;
+    }
+
+    private function dumpIndexedArray(array $var)
+    {
+        $count = count($var);
+        if (0 === $count) {
+            return '[]';
+        }
+
+        $str = '[' . $this->eol();
+        ++$this->depth;
+        for ($i = 0; $i < $count; ++$i) {
+            $str .= $this->indent() . rtrim($this->dumpVar($var[$i]), $this->separator);
+            if ($count-1 !== $i) {
+                $str .= $this->listSeparator;
+            }
+            $str .= $this->eol();
+        }
+        --$this->depth;
+        $str .= $this->indent() . ']';
+
+        return $str;
+    }
+
+    private function dumpString($var)
+    {
+        if (!$this->hasOption(self::QUOTE_STR) && preg_match('#^(' . Lexer::REGEX_NAME . ')$#A', $var)) {
             switch ($var) {
                 case 'true':
                 case 'false':
@@ -65,19 +171,43 @@ class Dumper
                 case 'yes':
                 case 'no':
                 case 'null':
-                    return self::STRING_DELIM . $var . self::STRING_DELIM;
+                    return '"' . $var . '"';
                 default:
                     return $var;
             }
         }
 
-        $find        = array(null, '\\', '"');
-        $replace     = array('NULL', '\\\\', '\\"');
+        return '"' . str_replace(
+            [ "\b",  "\f",  "\r",  "\n",  "\t",  '"' ],
+            [ '\\b', '\\f', '\\r', '\\n', '\\t', '\\"' ],
+            $var
+        ) . '"';
+    }
 
-        for ($i = 0, $c = count($find); $i < $c; $i++) {
-            $var = str_replace($find[$i], $replace[$i], $var);
+    private function isAssociativeArray(array $var)
+    {
+        $i = 0;
+        foreach ($var as $key => $value) {
+            if ($key !== $i++) {
+                return true;
+            }
         }
 
-        return self::STRING_DELIM . $var . self::STRING_DELIM;
+        return false;
+    }
+
+    private function eol()
+    {
+        return $this->hasOption(self::PRETTY_PRINT) ? PHP_EOL : '';
+    }
+
+    private function indent()
+    {
+        return $this->hasOption(self::PRETTY_PRINT) ? str_repeat($this->indentStr, $this->depth) : '';
+    }
+
+    private function hasOption($opt)
+    {
+        return $opt & $this->options;
     }
 }
