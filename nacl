@@ -9,7 +9,7 @@ foreach ([__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', 
 }
 
 $options = [
-    'action'  => 'help',
+    'action'  => '',
     'input' => [],
 ];
 
@@ -52,8 +52,12 @@ $parser = Nuglif\Nacl\Nacl::createParser();
 
 foreach ($options['input'] as $file) {
     try {
-        $parser->parseFile($file);
-        printf('No syntax errors detected in %s' . PHP_EOL, $file);
+        $r = $parser->parseFile($file);
+        if ('lint' === $options['action']) {
+            printf('No syntax errors detected in %s' . PHP_EOL, $file);
+        } else {
+            echo Nuglif\Nacl\Nacl::dump($r), PHP_EOL;
+        }
     } catch (Nuglif\Nacl\Exception $e) {
         printf('%s in %s on line %d' . PHP_EOL, $e->getMessage(), $e->getFile(), $e->getLine());
     }
