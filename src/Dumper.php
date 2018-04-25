@@ -177,11 +177,15 @@ class Dumper
             }
         }
 
-        return '"' . str_replace(
-            [ "\b",  "\f",  "\r",  "\n",  "\t",  '"' ],
-            [ '\\b', '\\f', '\\r', '\\n', '\\t', '\\"' ],
-            $var
-        ) . '"';
+        return '"' . strtr($var, [
+            "\b" => '\\b',
+            "\f" => '\\f',
+            "\r" => '\\r',
+            "\n" => '\\n',
+            "\t" => '\\t',
+            '"'  => '\\"',
+            '\\' => '\\\\',
+        ]) . '"';
     }
 
     private function isAssociativeArray(array $var)
