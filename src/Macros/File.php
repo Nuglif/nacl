@@ -17,12 +17,15 @@ class File implements MacroInterface, ParserAware
 
     public function execute($parameter, array $options = [])
     {
-        $file = $this->parser->resolvePath($parameter);
-        if (!$file) {
-            $this->parser->error("Unable to read file '${parameter}'");
+        if ($file = $this->parser->resolvePath($parameter)) {
+            return file_get_contents($file);
         }
 
-        return file_get_contents($file);
+        if (isset($options['default'])) {
+            return $options['default'];
+        }
+
+        $this->parser->error("Unable to read file '${parameter}'");
     }
 
     public function setParser(Parser $parser)

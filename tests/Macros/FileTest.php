@@ -39,4 +39,16 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(file_get_contents(__FILE__), $this->macro->execute('foo'));
     }
+
+    /**
+     * @test
+     */
+    public function executeWillReturnDefaultValueIfFileDoesntExists()
+    {
+        $this->parser->method('resolvePath')->will($this->returnValue(false));
+        $this->parser->method('error')->will($this->throwException(new \InvalidArgumentException));
+
+        $default = 'foo';
+        $this->assertSame($default, $this->macro->execute('test', [ 'default' => $default ]));
+    }
 }
