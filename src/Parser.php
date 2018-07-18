@@ -281,7 +281,7 @@ class Parser
 
         switch ($name) {
             case 'include':
-                $result = $this->doInclude($param, $options, $context);
+                $result = $this->doInclude($param, $options);
                 break;
             default:
                 if (!isset($this->macro[$name])) {
@@ -291,7 +291,15 @@ class Parser
                 break;
         }
 
-        return $result;
+        if (!is_array($context)) {
+            return $result;
+        }
+
+        if (!is_array($result)) {
+            $this->error('Macro without assignation key must return an array');
+        }
+
+        $context = $this->deepMerge($context, $result);
     }
 
     private function deepMerge(array $a1, array $a2)
@@ -317,8 +325,9 @@ class Parser
         return $a1;
     }
 
-    private function doInclude($file, $options, array &$context = null)
+    private function doInclude($file, $options)
     {
+        $value = [];
         $options = array_merge([
             'required' => true,
             'glob'     => false,
@@ -332,7 +341,7 @@ class Parser
                     $this->error('Unable to include file \'' . $file . '\'');
                 }
 
-                return null;
+                return $value;
             }
 
             $files = [ $path ];
@@ -343,10 +352,7 @@ class Parser
         foreach ($files as $file) {
             $this->lexer->push(file_get_contents($file), $file);
             $this->nextToken();
-            $value = $this->parseObject();
-            if (is_array($value) && is_array($context)) {
-                $context = $this->deepMerge($context, $value);
-            }
+            $value = $this->deepMerge($value, $this->parseObject());
             $this->consume(Token::T_EOF);
             $this->lexer->pop();
         }

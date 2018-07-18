@@ -136,4 +136,14 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         Nacl::parseFile('error');
     }
+
+    /**
+     * @test
+     * @expectedException Nuglif\Nacl\ParsingException
+     * @expectedExceptionMessage Macro without assignation key must return an array
+     */
+    public function testFoo()
+    {
+        Nacl::parse('.env unexistingenv');
+    }
 }
