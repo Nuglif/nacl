@@ -49,12 +49,15 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         $this->parser = Nacl::createParser();
 
-        $this->parser->registerMacro(new Macros\Callback('vault', function ($p, $a = []) {
-            return 'Fetch from vault=' . $p . ' or default' . $a['default'];
+        $this->parser->registerMacro(new Macros\Callback('testMacroWithOptions', function ($p, $a = []) {
+            return [
+                'param' => $p,
+                'options' => $a
+            ];
         }));
 
-        $this->parser->registerMacro(new Macros\Callback('consul', function ($p, $a = []) {
-            return 'Fetch from consul' . $p;
+        $this->parser->registerMacro(new Macros\Callback('testMacro', function ($p, $a = []) {
+            return $p;
         }));
 
         $this->parser->registerMacro(new Macros\Callback('json_encode', function ($p) {
@@ -62,7 +65,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         }));
 
         $this->parser->setVariable('BAR', 'bar');
-        $this->parser->setVariable('PREFIX', 'prefix');
+        $this->parser->setVariable('MY_VAR', 'my var value');
         $result = $this->parser->parseFile($naclFile);
         try {
             $this->assertEquals(

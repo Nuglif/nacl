@@ -4,11 +4,16 @@
     "key3": "val",
     "key4": "val",
     "parameters": {
-        "password": "Fetch from vault=foo or defaultlol"
+        "password": {
+            "param": "foo",
+            "options": {
+                "default": "lol"
+            }
+        }
     },
     "param": "value",
     "section": {
-        "toto": "Fetch from consulprefix\/foo\/bar",
+        "toto": "my var value\/foo\/bar",
         "param1": "%password%",
         "flag": true,
         "number": 10000,
