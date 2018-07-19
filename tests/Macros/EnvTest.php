@@ -34,6 +34,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     public function executeReturnDefaultWhenEnvVarIsNotSetAndDefaultIsSet()
     {
         $this->assertSame('FOO', $this->macro->execute('NOT_SET', [ 'default' => 'FOO' ]));
+        $this->assertSame(null, $this->macro->execute('NOT_SET', [ 'default' => null ]));
     }
 
     /**

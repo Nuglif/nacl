@@ -21,7 +21,7 @@ class File implements MacroInterface, ParserAware
             return file_get_contents($file);
         }
 
-        if (isset($options['default'])) {
+        if (array_key_exists('default', $options)) {
             return $options['default'];
         }
 

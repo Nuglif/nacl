@@ -17,7 +17,7 @@ class Constant implements MacroInterface
             throw new \InvalidArgumentException('Constant parameter must be a string');
         }
 
-        if (!defined($parameter) && isset($options['default'])) {
+        if (!defined($parameter) && array_key_exists('default', $options)) {
             return $options['default'];
         }
 

@@ -21,7 +21,7 @@ class Env implements MacroInterface
         $val = getenv($parameter);
 
         if (false === $val) {
-            return isset($options['default']) ? $options['default'] : false;
+            return array_key_exists('default', $options) ? $options['default'] : false;
         }
 
         return $this->cast($val, $options['type']);
