@@ -352,7 +352,11 @@ class Parser
         foreach ($files as $file) {
             $this->lexer->push(file_get_contents($file), $file);
             $this->nextToken();
-            $value = $this->deepMerge($value, $this->parseObject());
+            if ('[' == $this->token->type) {
+                $value = $this->deepMerge($value, $this->parseArray());
+            } else {
+                $value = $this->deepMerge($value, $this->parseObject());
+            }
             $this->consume(Token::T_EOF);
             $this->lexer->pop();
         }
