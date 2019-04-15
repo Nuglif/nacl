@@ -571,7 +571,7 @@ class Parser
     private function syntaxError()
     {
         $literal = Token::getLiteral($this->token->type);
-        $value   = (strlen($this->token->value) > 10) ? substr($this->token->value, 0, 10) . '...' : $this->token->value;
+        $value   = (strlen((string) $this->token->value) > 10) ? substr($this->token->value, 0, 10) . '...' : $this->token->value;
 
         $message = 'Syntax error, unexpected \'' . $value . '\'';
         if ($literal !== $value) {

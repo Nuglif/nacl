@@ -37,7 +37,7 @@ class Dumper
     private $depth = 0;
 
     /**
-     * @var
+     * @var int
      */
     private $options;
 
@@ -86,8 +86,6 @@ class Dumper
             case 'NULL':
                 return 'null';
         }
-
-        return $out;
     }
 
     private function dumpArray(array $var, $root = false)
@@ -191,7 +189,7 @@ class Dumper
     private function isAssociativeArray(array $var)
     {
         $i = 0;
-        foreach ($var as $key => $value) {
+        foreach (array_keys($var) as $key) {
             if ($key !== $i++) {
                 return true;
             }
