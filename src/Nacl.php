@@ -4,12 +4,23 @@ namespace Nuglif\Nacl;
 
 class Nacl
 {
+    private static $macros = [];
+
+    public static function registerMacro(MacroInterface $macro)
+    {
+        self::$macros[] = $macro;
+    }
+
     public static function createParser()
     {
         $parser = new Parser;
         $parser->registerMacro(new Macros\File);
         $parser->registerMacro(new Macros\Env);
         $parser->registerMacro(new Macros\Constant);
+
+        foreach (self::$macros as $macro) {
+            $parser->registerMacro($macro);
+        }
 
         return $parser;
     }

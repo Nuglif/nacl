@@ -146,4 +146,15 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         Nacl::parse('.env unexistingenv');
     }
+
+    /**
+     * @test
+     */
+    public function testRegisterMacro()
+    {
+        Nacl::registerMacro($macro = new Macros\Callback('strtoupper', function ($p) {
+            return strtoupper($p);
+        }));
+        $this->assertSame(['foo' => 'BAR'], Nacl::parse('foo .strtoupper bar'));
+    }
 }
