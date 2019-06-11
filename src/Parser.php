@@ -70,9 +70,10 @@ class Parser
 
     /**
      * Object       ::= "{" InnerObject "}" | InnerObject
-     * InnerObject  ::= [ KeyValueList [ "," | ";" ] ]
-     * KeyValueList ::= KeyValue [ [ "," | ";" ] KeyValueList ]
+     * InnerObject  ::= [ KeyValueList [ Separator ] ]
+     * KeyValueList ::= KeyValue [ Separator KeyValueList ]
      * KeyValue     ::= ( ( T_END_STR | T_NAME | T_VAR ) [ ":" | "=" ] Value ) | MacroCall
+     * Separator    ::= "," | ";"
      */
     private function parseObject()
     {
@@ -125,7 +126,7 @@ class Parser
 
     /**
      * Array     ::= "[" [ ValueList ] "]"
-     * ValueList ::= Value [ "," ValueList ]
+     * ValueList ::= Value [ Separator ValueList ]
      */
     private function parseArray()
     {
