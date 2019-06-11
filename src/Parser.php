@@ -92,27 +92,27 @@ class Parser
                         $name = $this->token->value;
                         $this->nextToken();
                     }
-                    $this->consumeOptional(':') || $this->consumeOptional('=');
+                    $this->consumeOptionalAssignementOperator();
                     $val           = $this->parseValue();
                     if (is_array($val) && isset($object[$name]) && is_array($object[$name])) {
                         $object[$name] = $this->deepMerge($object[$name], $val);
                     } else {
                         $object[$name] = $val;
                     }
-                    $separator     = $this->consumeOptional(',') || $this->consumeOptional(';');
+                    $separator     = $this->consumeOptionalSeparator();
                     $continue      = is_array($val) || $separator;
                     break;
                 case Token::T_VAR:
                     $name = $this->token->value;
                     $this->nextToken();
-                    $this->consumeOptional(':') || $this->consumeOptional('=');
+                    $this->consumeOptionalAssignementOperator();
                     $val           = $this->parseValue();
                     $this->setVariable($name, $val);
-                    $continue      = $this->consumeOptional(',') || $this->consumeOptional(';');
+                    $continue      = $this->consumeOptionalSeparator();
                     break;
                 case '.':
                     $val      = $this->parseMacro($object);
-                    $continue      = $this->consumeOptional(',') || $this->consumeOptional(';');
+                    $continue      = $this->consumeOptionalSeparator();
                     break;
             }
         } while ($continue);
@@ -136,7 +136,7 @@ class Parser
         $continue = true;
         while ($continue && ']' !== $this->token->type) {
             $array[]  = $this->parseValue();
-            $continue = $this->consumeOptional(',') || $this->consumeOptional(';');
+            $continue = $this->consumeOptionalSeparator();
         }
 
         $this->consume(']');
@@ -158,7 +158,7 @@ class Parser
             case Token::T_END_STR:
             case Token::T_NAME:
                 $value     = $this->parseScalar();
-                $required  = $this->consumeOptional(':') || $this->consumeOptional('=');
+                $required  = $this->consumeOptionalAssignementOperator();
                 $realValue = $this->parseValue($required, $valueIsKey);
                 if ($valueIsKey) {
                     return [ $value => $realValue ];
@@ -551,6 +551,28 @@ class Parser
         }
 
         $this->nextToken();
+    }
+
+    private function consumeOptionalSeparator()
+    {
+        if (',' !== $this->token->type && ';' !== $this->token->type) {
+            return false;
+        }
+
+        $this->nextToken();
+
+        return true;
+    }
+
+    private function consumeOptionalAssignementOperator()
+    {
+        if (':' !== $this->token->type && '=' !== $this->token->type) {
+            return false;
+        }
+
+        $this->nextToken();
+
+        return true;
     }
 
     private function consumeOptional($type)
