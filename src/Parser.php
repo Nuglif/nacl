@@ -77,9 +77,18 @@ class Parser
      */
     private function parseObject()
     {
-        $object = [];
         $opened = $this->consumeOptional('{');
+        $object = $this->parseInnerObject();
+        if ($opened) {
+            $this->consume('}');
+        }
 
+        return $object;
+    }
+
+    private function parseInnerObject()
+    {
+        $object = [];
         do {
             $name     = null;
             $continue = false;
@@ -116,10 +125,6 @@ class Parser
                     break;
             }
         } while ($continue);
-
-        if ($opened) {
-            $this->consume('}');
-        }
 
         return $object;
     }
@@ -272,7 +277,7 @@ class Parser
         $this->nextToken();
 
         if ($this->consumeOptional('(')) {
-            $options = $this->parseObject();
+            $options = $this->parseInnerObject();
             $this->consume(')');
         } else {
             $options = [];
