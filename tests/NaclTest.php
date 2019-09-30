@@ -2,6 +2,9 @@
 
 namespace Nuglif\Nacl;
 
+use Nuglif\Nacl\LexingException;
+use Nuglif\Nacl\ParsingException;
+
 define('TEST_CONST', 'value');
 putenv('TEST=valid');
 
@@ -80,70 +83,77 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException Nuglif\Nacl\LexingException
-     * @expectedExceptionMessage Unterminated string
      */
     public function testUnterminatedString()
     {
+        $this->expectException(LexingException::class);
+        $this->expectExceptionMessage('Unterminated string');
+
         Nacl::parse('foo="bar');
     }
 
     /**
      * @test
-     * @expectedException Nuglif\Nacl\LexingException
-     * @expectedExceptionMessage Unterminated HEREDOC
      */
     public function testUnterminatedHeredoc()
     {
+        $this->expectException(LexingException::class);
+        $this->expectExceptionMessage('Unterminated HEREDOC');
+
         Nacl::parse("foo=<<<TEST\n");
     }
 
     /**
      * @test
-     * @expectedException Nuglif\Nacl\LexingException
-     * @expectedExceptionMessage Unterminated multiline comment
      */
     public function testUnterminatedMultilineComment()
     {
+        $this->expectException(LexingException::class);
+        $this->expectExceptionMessage('Unterminated multiline comment');
+
         Nacl::parse('/*');
     }
 
     /**
      * @test
-     * @expectedException Nuglif\Nacl\ParsingException
-     * @expectedExceptionMessage Syntax error, unexpected '10' (T_NUM)
      */
     public function testParseErrorMessageWithTokenName()
     {
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Syntax error, unexpected \'10\' (T_NUM)');
+
         Nacl::parse('foo bar baz {}10;', 'file');
     }
 
     /**
      * @test
-     * @expectedException Nuglif\Nacl\ParsingException
-     * @expectedExceptionMessage Syntax error, unexpected ';'
      */
     public function testParseErrorMesageWithoutTokenName()
     {
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Syntax error, unexpected \';\'');
+
         Nacl::parse('foo;', 'file');
     }
 
     /**
      * @test
-     * @expectedException \InvalidArgumentException
      */
     public function parsingUnexistingFileThrowInvalidArgumentException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         Nacl::parseFile('error');
     }
 
     /**
      * @test
-     * @expectedException Nuglif\Nacl\ParsingException
-     * @expectedExceptionMessage Macro without assignation key must return an array
      */
     public function testFoo()
     {
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Macro without assignation key must return an array');
+
         Nacl::parse('.env unexistingenv');
     }
 

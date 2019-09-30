@@ -69,10 +69,10 @@ class EnvTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
      */
     public function executeWillThrowInvalidArgumentExceptionIfTypeIsUnknown()
     {
+        $this->expectException(\InvalidArgumentException::class);
         putenv('FOO=foo');
         $this->macro->execute('FOO', [ 'type' => 'unknown' ]);
     }

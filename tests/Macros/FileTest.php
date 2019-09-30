@@ -20,10 +20,11 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
      */
     public function executeCallParseErrorIfFileDoesntExists()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $this->parser->method('error')->will($this->throwException(new \InvalidArgumentException));
         $this->parser->method('resolvePath')->will($this->returnValue(false));
 

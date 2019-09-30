@@ -32,10 +32,10 @@ class ConstantTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException InvalidArgumentException
      */
     public function executeWillReturnInvalidArgumentExceptionIfNameIsNotAString()
     {
+        $this->expectException(\InvalidArgumentException::class);
         $this->macro->execute(10);
     }
 }
