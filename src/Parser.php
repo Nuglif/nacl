@@ -51,7 +51,7 @@ class Parser
         $this->lexer->pop();
         $this->token = $token;
 
-        return $result;
+        return $result->getNativeValue();
     }
 
     public function parseFile($file)
@@ -88,7 +88,7 @@ class Parser
 
     private function parseInnerObject()
     {
-        $object = [];
+        $object = new ObjectNode;
         do {
             $name     = null;
             $continue = false;
@@ -103,13 +103,13 @@ class Parser
                     }
                     $this->consumeOptionalAssignementOperator();
                     $val           = $this->parseValue();
-                    if (is_array($val) && isset($object[$name]) && is_array($object[$name])) {
-                        $object[$name] = $this->deepMerge($object[$name], $val);
+                    if ($val instanceof ObjectNode && isset($object[$name]) && $object[$name] instanceof ObjectNode) {
+                        $object[$name] = $object[$name]->merge($val);
                     } else {
                         $object[$name] = $val;
                     }
                     $separator     = $this->consumeOptionalSeparator();
-                    $continue      = is_array($val) || $separator;
+                    $continue      = is_object($val) || $separator;
                     break;
                 case Token::T_VAR:
                     $name = $this->token->value;
@@ -121,10 +121,10 @@ class Parser
                     break;
                 case '.':
                     $val      = $this->parseMacro($object);
-                    if (!is_array($val)) {
+                    if (!$val instanceof ObjectNode) {
                         $this->error('Macro without assignation key must return an object');
                     }
-                    $object = $this->deepMerge($object, $val);
+                    $object = $object->merge($val);
                     $continue      = $this->consumeOptionalSeparator();
                     break;
             }
@@ -139,12 +139,12 @@ class Parser
      */
     private function parseArray()
     {
-        $array = [];
+        $array = new ArrayNode;
         $this->consume('[');
 
         $continue = true;
         while ($continue && ']' !== $this->token->type) {
-            $array[]  = $this->parseValue();
+            $array->add($this->parseValue());
             $continue = $this->consumeOptionalSeparator();
         }
 
@@ -170,7 +170,7 @@ class Parser
                 $required  = $this->consumeOptionalAssignementOperator();
                 $realValue = $this->parseValue($required, $valueIsKey);
                 if ($valueIsKey) {
-                    return [ $value => $realValue ];
+                    return new ObjectNode([ $value => $realValue ]);
                 }
                 break;
             case Token::T_BOOL:
@@ -284,7 +284,7 @@ class Parser
             $options = $this->parseInnerObject();
             $this->consume(')');
         } else {
-            $options = [];
+            $options = new ObjectNode;
         }
 
         $param = $this->parseValue();
@@ -297,49 +297,25 @@ class Parser
                 if (!isset($this->macro[$name])) {
                     $this->error('Unknown macro \'' . $name . '\'');
                 }
-                $result = $this->macro[$name]($param, $options);
+                $result = $this->macro[$name]($param instanceof Node ? $param->getNativeValue() : $param, $options->getNativeValue());
+                if (is_array($result)) {
+                    $result = is_int(key($result)) ? new ArrayNode(array_values($result)) : new ObjectNode($result);
+                }
                 break;
         }
 
         return $result;
     }
 
-    private function deepMerge(array $a1, array $a2)
-    {
-        if (empty($a1)) {
-            return $a2;
-        } elseif (empty($a2)) {
-            return $a1;
-        }
-
-        if (is_int(key($a1)) || is_int(key($a2))) {
-            return $a2;
-        }
-
-        foreach ($a2 as $key => $value) {
-            if (!isset($a1[$key]) || !is_array($a1[$key]) || !is_array($value)) {
-                $a1[$key] = $value;
-            } else {
-                $a1[$key] = $this->deepMerge($a1[$key], $value);
-            }
-        }
-
-        return $a1;
-    }
-
     private function doInclude($file, $options)
     {
-        $value = [];
-        $options = array_merge([
-            'required' => true,
-            'glob'     => false,
-        ], $options);
+        $value = new ObjectNode;
 
-        if ($options['glob']) {
+        if (isset($options['glob']) ? $options['glob'] : false) {
             $files = $this->glob($file);
         } else {
             if (!$path = $this->resolvePath($file)) {
-                if ($options['required']) {
+                if (isset($options['required']) ? $options['required'] : true) {
                     $this->error('Unable to include file \'' . $file . '\'');
                 }
 
@@ -355,9 +331,11 @@ class Parser
             $this->lexer->push(file_get_contents($file), $file);
             $this->nextToken();
             if ('[' == $this->token->type) {
-                $value = $this->deepMerge($value, $this->parseArray());
+                $value = $this->parseArray();
+            } elseif ($value instanceof ObjectNode) {
+                $value = $value->merge($this->parseObject());
             } else {
-                $value = $this->deepMerge($value, $this->parseObject());
+                $value = $this->parseObject();
             }
             $this->consume(Token::T_EOF);
             $this->lexer->pop();
