@@ -94,7 +94,7 @@ class Parser
             $continue = false;
             switch ($this->token->type) {
                 case Token::T_END_STR:
-                    $name = $this->parseString();
+                    $name = $this->parseString()->getNativeValue();
                     /* No break */
                 case Token::T_NAME:
                     if (null === $name) {
@@ -121,6 +121,9 @@ class Parser
                     break;
                 case '.':
                     $val      = $this->parseMacro($object);
+                    if ($val instanceof MacroNode) {
+                        $val = $val->execute();
+                    }
                     if (!$val instanceof ObjectNode) {
                         $this->error('Macro without assignation key must return an object');
                     }
@@ -228,13 +231,13 @@ class Parser
         do {
             switch ($this->token->type) {
                 case Token::T_ENCAPSED_VAR:
-                    $value .= $this->getVariable($this->token->value);
+                    $value = new OperationNode($value, $this->getVariable($this->token->value), OperationNode::CONCAT);
                     break;
                 case Token::T_END_STR:
                     $continue = false;
                     /* no break */
                 case Token::T_STRING:
-                    $value .= $this->token->value;
+                    $value = new OperationNode($value, $this->token->value, OperationNode::CONCAT);
                     break;
             }
 
@@ -300,10 +303,7 @@ class Parser
                 if (!isset($this->macro[$name])) {
                     $this->error('Unknown macro \'' . $name . '\'');
                 }
-                $result = $this->macro[$name]($param instanceof Node ? $param->getNativeValue() : $param, $options->getNativeValue());
-                if (is_array($result)) {
-                    $result = is_int(key($result)) ? new ArrayNode(array_values($result)) : new ObjectNode($result);
-                }
+                $result = new MacroNode($this->macro[$name], $param, $options);
                 break;
         }
 
@@ -381,7 +381,7 @@ class Parser
         $value = $this->parseOrOperand();
 
         while ($this->consumeOptional('|')) {
-            $value |= $this->parseOrOperand();
+            $value = new OperationNode($value, $this->parseOrOperand(), OperationNode::OR_OPERATOR);
         }
 
         return $value;
@@ -395,7 +395,7 @@ class Parser
         $value = $this->parseAndOperand();
 
         while ($this->consumeOptional('&')) {
-            $value &= $this->parseAndOperand();
+            $value = new OperationNode($value, $this->parseAndOperand(), OperationNode::AND_OPERATOR);
         }
 
         return $value;
@@ -413,11 +413,11 @@ class Parser
             switch ($this->token->type) {
                 case '<<':
                     $this->nextToken();
-                    $value <<= $this->parseShiftOperand();
+                    $value = new OperationNode($value, $this->parseShiftOperand(), OperationNode::SHIFT_LEFT);
                     break;
                 case '>>':
                     $this->nextToken();
-                    $value >>= $this->parseShiftOperand();
+                    $value = new OperationNode($value, $this->parseShiftOperand(), OperationNode::SHIFT_RIGHT);
                     break;
                 default:
                     $continue = false;
@@ -439,11 +439,11 @@ class Parser
             switch ($this->token->type) {
                 case '+':
                     $this->nextToken();
-                    $value += $this->parseMathTerm();
+                    $value = new OperationNode($value, $this->parseMathTerm(), OperationNode::ADD);
                     break;
                 case '-':
                     $this->nextToken();
-                    $value -= $this->parseMathTerm();
+                    $value = new OperationNode($value, $this->parseMathTerm(), OperationNode::SUB);
                     break;
                 default:
                     $continue = false;
@@ -465,20 +465,20 @@ class Parser
             switch ($this->token->type) {
                 case '*':
                     $this->nextToken();
-                    $value *= $this->parseMathFactor();
+                    $value = new OperationNode($value, $this->parseMathFactor(), OperationNode::MUL);
                     break;
                 case '(':
                     $this->nextToken();
-                    $value *= $this->parseMathExpr();
+                    $value = new OperationNode($value, $this->parseMathExpr(), OperationNode::MUL);
                     $this->consume(')');
                     break;
                 case '%':
                     $this->nextToken();
-                    $value %= $this->parseMathExpr();
+                    $value = new OperationNode($value, $this->parseMathExpr(), OperationNode::MOD);
                     break;
                 case '/':
                     $this->nextToken();
-                    $value /= $this->parseMathFactor();
+                    $value = new OperationNode($value, $this->parseMathFactor(), OperationNode::DIV);
                     break;
                 default:
                     $continue = false;
@@ -513,14 +513,14 @@ class Parser
                 break;
             case '-':
                 $this->nextToken();
-                $value = -$this->parseMathTerm();
+                $value = new OperationNode(0, $this->parseMathTerm(), OperationNode::SUB);
                 break;
             default:
                 $this->syntaxError();
         }
 
         if ($this->consumeOptional('^')) {
-            $value **= $this->parseMathFactor();
+            $value = new OperationNode($value, $this->parseMathFactor(), OperationNode::POW);
         }
 
         return $value;

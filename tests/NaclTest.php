@@ -167,6 +167,20 @@ class NaclTest extends \PHPUnit\Framework\TestCase
             return strtoupper($p);
         }));
         $this->assertSame(['foo' => 'BAR'], Nacl::parse('foo .strtoupper bar'));
+        $this->assertSame(['foo' => 'BAR'], Nacl::parse('${BAR} = .strtoupper bar; foo ${BAR};'));
+    }
+
+    /**
+     * @test
+     */
+    public function testLazyMacroExecution()
+    {
+        $this->parser = Nacl::createParser();
+        $this->parser->registerMacro($macro = new Macros\Callback('error', function ($p) {
+            throw new \Exception($p);
+        }));
+
+        $this->assertSame(['foo' => 'bar'], $this->parser->parse('foo .error "FAIL"; foo bar;'));
     }
 
     /**
