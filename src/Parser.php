@@ -121,6 +121,10 @@ class Parser
                     break;
                 case '.':
                     $val      = $this->parseMacro($object);
+                    if (!is_array($val)) {
+                        $this->error('Macro without assignation key must return an object');
+                    }
+                    $object = $this->deepMerge($object, $val);
                     $continue      = $this->consumeOptionalSeparator();
                     break;
             }
@@ -264,7 +268,7 @@ class Parser
     /**
      * MacroCall ::= "." T_NAME [ "(" [ Object ] ")" ] Value
      */
-    private function parseMacro(array &$context = null)
+    private function parseMacro()
     {
         $this->consume('.');
         $result = null;
@@ -297,15 +301,7 @@ class Parser
                 break;
         }
 
-        if (!is_array($context)) {
-            return $result;
-        }
-
-        if (!is_array($result)) {
-            $this->error('Macro without assignation key must return an array');
-        }
-
-        $context = $this->deepMerge($context, $result);
+        return $result;
     }
 
     private function deepMerge(array $a1, array $a2)

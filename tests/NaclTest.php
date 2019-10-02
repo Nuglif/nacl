@@ -149,10 +149,10 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testFoo()
+    public function testMacroInMoreGlobalScope()
     {
         $this->expectException(ParsingException::class);
-        $this->expectExceptionMessage('Macro without assignation key must return an array');
+        $this->expectExceptionMessage('Macro without assignation key must return an object');
 
         Nacl::parse('.env unexistingenv');
     }
