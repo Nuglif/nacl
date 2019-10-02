@@ -1,0 +1,11 @@
+{
+    "var1": "var1",
+    "var2": {
+        "param": "param",
+        "options": {
+            "optionName": "value"
+        }
+    },
+    "var3": "var1",
+    "var4": "var1 is var1"
+}

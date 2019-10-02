@@ -2,7 +2,7 @@
 
 namespace Nuglif\Nacl;
 
-class ArrayNode implements \IteratorAggregate, \Countable, Node
+class ArrayNode extends Node implements \IteratorAggregate, \Countable
 {
     private $array;
 
@@ -13,6 +13,10 @@ class ArrayNode implements \IteratorAggregate, \Countable, Node
 
     public function add($item)
     {
+        if ($item instanceof Node) {
+            $item->setParent($this);
+        }
+
         $this->array[] = $item;
     }
 

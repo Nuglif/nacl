@@ -293,6 +293,9 @@ class Parser
             case 'include':
                 $result = $this->doInclude($param, $options);
                 break;
+            case 'ref':
+                $result = new ReferenceNode($param, $this->lexer->getFilename(), $this->lexer->getLine());
+                break;
             default:
                 if (!isset($this->macro[$name])) {
                     $this->error('Unknown macro \'' . $name . '\'');

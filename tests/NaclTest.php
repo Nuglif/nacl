@@ -4,6 +4,7 @@ namespace Nuglif\Nacl;
 
 use Nuglif\Nacl\LexingException;
 use Nuglif\Nacl\ParsingException;
+use Nuglif\Nacl\ReferenceException;
 
 define('TEST_CONST', 'value');
 putenv('TEST=valid');
@@ -166,5 +167,38 @@ class NaclTest extends \PHPUnit\Framework\TestCase
             return strtoupper($p);
         }));
         $this->assertSame(['foo' => 'BAR'], Nacl::parse('foo .strtoupper bar'));
+    }
+
+    /**
+     * @test
+     */
+    public function refWithoutString()
+    {
+        $this->expectException(ReferenceException::class);
+        $this->expectExceptionMessage('.ref expects parameter to be string, array given.');
+
+        Nacl::parse('ref .ref {}');
+    }
+
+    /**
+     * @test
+     */
+    public function circularDependencyDetection()
+    {
+        $this->expectException(ReferenceException::class);
+        $this->expectExceptionMessage('Circular dependence detected.');
+
+        Nacl::parse('foo .ref "./bar"; bar .ref "foo"');
+    }
+
+    /**
+     * @test
+     */
+    public function undefinedRef()
+    {
+        $this->expectException(ReferenceException::class);
+        $this->expectExceptionMessage('Undefined property: bar.');
+
+        Nacl::parse('foo .ref "bar";');
     }
 }

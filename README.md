@@ -151,6 +151,16 @@ of the included file and copy pasting it at the same place as the include.
 .include "file.conf";
 ```
 
+#### Reference
+
+`.ref` predefined macro is a reference to an other value in the tree. The provided path can be
+relative or absolute
+
+```nacl
+foo bar;
+bar .ref "foo";
+```
+
 #### Macros
 You can write your own external macros.
 

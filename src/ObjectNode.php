@@ -2,13 +2,15 @@
 
 namespace Nuglif\Nacl;
 
-class ObjectNode implements \IteratorAggregate, \ArrayAccess, \Countable, Node
+class ObjectNode extends Node implements  \IteratorAggregate, \ArrayAccess, \Countable
 {
-    private $values;
+    private $values = [];
 
     public function __construct(array $values = [])
     {
-        $this->values = $values;
+        foreach ($values as $k => $v) {
+            $this[$k] = $v;
+        }
     }
 
     public function count()
@@ -42,6 +44,9 @@ class ObjectNode implements \IteratorAggregate, \ArrayAccess, \Countable, Node
 
     public function offsetSet($offset, $value)
     {
+        if ($value instanceof Node) {
+            $value->setParent($this);
+        }
         $this->values[$offset] = $value;
     }
 

@@ -1,0 +1,11 @@
+{
+    "foo": "bar",
+    "bar": "bar",
+    "baz": "bar",
+    "ref": {
+        "with": {
+            "root": "bar",
+            "parent": "bar"
+        }
+   }
+}
