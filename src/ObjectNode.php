@@ -4,7 +4,8 @@ namespace Nuglif\Nacl;
 
 class ObjectNode extends Node implements  \IteratorAggregate, \ArrayAccess, \Countable
 {
-    private $values = [];
+    private $value = [];
+    private $isNative = true;
 
     public function __construct(array $values = [])
     {
@@ -15,7 +16,7 @@ class ObjectNode extends Node implements  \IteratorAggregate, \ArrayAccess, \Cou
 
     public function count()
     {
-        return count($this->values);
+        return count($this->value);
     }
 
     public function merge(ObjectNode $a2)
@@ -39,39 +40,48 @@ class ObjectNode extends Node implements  \IteratorAggregate, \ArrayAccess, \Cou
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->values);
+        return new \ArrayIterator($this->value);
     }
 
     public function offsetSet($offset, $value)
     {
         if ($value instanceof Node) {
             $value->setParent($this);
+            $this->isNative = false;
         }
-        $this->values[$offset] = $value;
+        $this->value[$offset] = $value;
     }
 
     public function offsetGet($offset)
     {
-        return $this->values[$offset];
+        return $this->value[$offset];
     }
 
     public function offsetExists($offset)
     {
-        return isset($this->values[$offset]);
+        return isset($this->value[$offset]);
     }
 
     public function offsetUnset($offset)
     {
-        unset($this->values[$offset]);
+        unset($this->value[$offset]);
     }
 
     public function getNativeValue()
     {
-        $result = [];
-        foreach ($this->values as $k => $v) {
-            $result[$k] = $v instanceof Node ? $v->getNativeValue() : $v;
+        if (!$this->isNative) {
+            $this->resolve();
         }
 
-        return $result;
+        return $this->value;
     }
+
+    private function resolve()
+    {
+        foreach ($this->value as $k => $v) {
+            $this->value[$k] = $v instanceof Node ? $v->getNativeValue() : $v;
+        }
+        $this->isNative = true;
+    }
+
 }

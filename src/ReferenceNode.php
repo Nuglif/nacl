@@ -8,8 +8,10 @@ class ReferenceNode extends Node
 
     private $path;
     private $isResolving = false;
+    private $isResolved  = false;
     private $file;
     private $line;
+    private $value;
 
     public function __construct($path, $file, $line)
     {
@@ -19,6 +21,15 @@ class ReferenceNode extends Node
     }
 
     public function getNativeValue()
+    {
+        if (!$this->isResolved) {
+            $this->resolve();
+        }
+
+        return $this->value;
+    }
+
+    private function resolve()
     {
         if ($this->isResolving) {
             throw new ReferenceException('Circular dependence detected.', $this->file, $this->line);
@@ -54,10 +65,11 @@ class ReferenceNode extends Node
         }
 
         $this->isResolving = false;
-        return $value;
+        $this->isResolved  = true;
+        $this->value = $value;
     }
 
-    public function isAbsolute()
+    private function isAbsolute()
     {
         return self::ROOT === substr($this->path, 0, 1);
     }

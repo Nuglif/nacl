@@ -4,39 +4,48 @@ namespace Nuglif\Nacl;
 
 class ArrayNode extends Node implements \IteratorAggregate, \Countable
 {
-    private $array;
+    private $value;
+    private $isNative = true;
 
     public function __construct(array $defaultValues = [])
     {
-        $this->array = $defaultValues;
+        $this->value = $defaultValues;
     }
 
     public function add($item)
     {
         if ($item instanceof Node) {
             $item->setParent($this);
+            $this->isNative = false;
         }
 
-        $this->array[] = $item;
+        $this->value[] = $item;
     }
 
     public function count()
     {
-        return count($this->array);
+        return count($this->value);
     }
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->array);
+        return new \ArrayIterator($this->value);
     }
 
     public function getNativeValue()
     {
-        $result = [];
-        foreach ($this->array as $k => $v) {
-            $result[$k] = $v instanceof Node ? $v->getNativeValue() : $v;
+        if (!$this->isNative) {
+            $this->resolve();
         }
 
-        return $result;
+        return $this->value;
+    }
+
+    private function resolve()
+    {
+        foreach ($this->value as $k => $v) {
+            $this->value[$k] = $v instanceof Node ? $v->getNativeValue() : $v;
+        }
+        $this->isNative = true;
     }
 }
