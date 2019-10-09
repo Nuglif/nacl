@@ -2,9 +2,9 @@
 
 namespace Nuglif\Nacl;
 
-class ObjectNode extends Node implements  \IteratorAggregate, \ArrayAccess, \Countable
+class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-    private $value = [];
+    private $value    = [];
     private $isNative = true;
 
     public function __construct(array $values = [])
@@ -83,5 +83,4 @@ class ObjectNode extends Node implements  \IteratorAggregate, \ArrayAccess, \Cou
         }
         $this->isNative = true;
     }
-
 }

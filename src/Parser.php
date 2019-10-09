@@ -6,8 +6,8 @@ class Parser
 {
     private $lexer;
     private $token;
-    private $macro      = [];
-    private $variables  = [];
+    private $macro     = [];
+    private $variables = [];
 
     public function __construct(Lexer $lexer = null)
     {
@@ -95,40 +95,40 @@ class Parser
             switch ($this->token->type) {
                 case Token::T_END_STR:
                     $name = $this->parseString()->getNativeValue();
-                    /* No break */
+                    /* no break */
                 case Token::T_NAME:
                     if (null === $name) {
                         $name = $this->token->value;
                         $this->nextToken();
                     }
                     $this->consumeOptionalAssignementOperator();
-                    $val           = $this->parseValue();
+                    $val = $this->parseValue();
                     if ($val instanceof ObjectNode && isset($object[$name]) && $object[$name] instanceof ObjectNode) {
                         $object[$name] = $object[$name]->merge($val);
                     } else {
                         $object[$name] = $val;
                     }
-                    $separator     = $this->consumeOptionalSeparator();
-                    $continue      = is_object($val) || $separator;
+                    $separator = $this->consumeOptionalSeparator();
+                    $continue  = is_object($val) || $separator;
                     break;
                 case Token::T_VAR:
                     $name = $this->token->value;
                     $this->nextToken();
                     $this->consumeOptionalAssignementOperator();
-                    $val           = $this->parseValue();
+                    $val = $this->parseValue();
                     $this->setVariable($name, $val);
-                    $continue      = $this->consumeOptionalSeparator();
+                    $continue = $this->consumeOptionalSeparator();
                     break;
                 case '.':
-                    $val      = $this->parseMacro($object);
+                    $val = $this->parseMacro($object);
                     if ($val instanceof MacroNode) {
                         $val = $val->execute();
                     }
                     if (!$val instanceof ObjectNode) {
                         $this->error('Macro without assignation key must return an object');
                     }
-                    $object = $object->merge($val);
-                    $continue      = $this->consumeOptionalSeparator();
+                    $object   = $object->merge($val);
+                    $continue = $this->consumeOptionalSeparator();
                     break;
             }
         } while ($continue);
@@ -276,7 +276,7 @@ class Parser
         $this->consume('.');
         $result = null;
 
-        if ($this->token->type != Token::T_NAME) {
+        if (Token::T_NAME != $this->token->type) {
             $this->syntaxError();
         }
 

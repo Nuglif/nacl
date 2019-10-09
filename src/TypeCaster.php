@@ -18,19 +18,19 @@ class TypeCaster
             switch ($matches[0]) {
                 case 'g':
                     $res *= 1000;
-                    /* No break */
+                    /* no break */
                 case 'm':
                     $res *= 1000;
-                    /* No break */
+                    /* no break */
                 case 'k':
                     $res *= 1000;
                     break;
                 case 'gb':
                     $res *= 1024;
-                    /* No break */
+                    /* no break */
                 case 'mb':
                     $res *= 1024;
-                    /* No break */
+                    /* no break */
                 case 'kb':
                     $res *= 1024;
                     break;
@@ -39,13 +39,13 @@ class TypeCaster
                     break;
                 case 'w':
                     $res *= 7;
-                    /* No break */
+                    /* no break */
                 case 'd':
                     $res *= 24;
-                    /* No break */
+                    /* no break */
                 case 'h':
                     $res *= 60;
-                    /* No break */
+                    /* no break */
                 case 'min':
                     $res *= 60;
                     break;

@@ -9,7 +9,7 @@ class DumperTest extends \PHPUnit\Framework\TestCase
         $files = glob(__DIR__ . '/json/*.json');
 
         $testCases = [];
-        for ($i = 0; $i <= Dumper::QUOTE_STR+1; $i++) {
+        for ($i = 0; $i <= Dumper::QUOTE_STR + 1; ++$i) {
             foreach ($files as $file) {
                 $testCases[] = [ $i, file_get_contents($file) ];
             }
@@ -27,7 +27,7 @@ class DumperTest extends \PHPUnit\Framework\TestCase
         $expected = json_decode($json, true);
 
         $dumper = new Dumper($options);
-        $nacl = $dumper->dump($expected);
+        $nacl   = $dumper->dump($expected);
 
         try {
             $result = Nacl::parse($nacl);

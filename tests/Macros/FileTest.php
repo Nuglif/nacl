@@ -2,8 +2,6 @@
 
 namespace Nuglif\Nacl\Macros;
 
-use Phake;
-
 class FileTest extends \PHPUnit\Framework\TestCase
 {
     private $macro;
@@ -11,7 +9,7 @@ class FileTest extends \PHPUnit\Framework\TestCase
 
     public function setUp()
     {
-        $this->macro = new File;
+        $this->macro  = new File;
         $this->parser = $this->getMockBuilder(\Nuglif\Nacl\Parser::class)
             ->getMock();
 

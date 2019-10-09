@@ -2,10 +2,6 @@
 
 namespace Nuglif\Nacl;
 
-use Nuglif\Nacl\LexingException;
-use Nuglif\Nacl\ParsingException;
-use Nuglif\Nacl\ReferenceException;
-
 define('TEST_CONST', 'value');
 putenv('TEST=valid');
 
@@ -55,7 +51,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
         $this->parser->registerMacro(new Macros\Callback('testMacroWithOptions', function ($p, $a = []) {
             return [
-                'param' => $p,
+                'param'   => $p,
                 'options' => $a
             ];
         }));

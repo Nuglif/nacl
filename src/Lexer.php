@@ -8,18 +8,18 @@ class Lexer extends AbstractLexer
     const STATE_INSTRING  = 1;
     const STATE_INHEREDOC = 2;
 
-    const REGEX_SPACE       = '[ \t\n\r]+';
-    const REGEX_COMMENT     = '(?://|\#).*';
-    const REGEX_COMMENT_ML  = '/\*';
-    const REGEX_NAME        = '[A-Za-z_][A-Za-z0-9_]*';
-    const REGEX_VAR         = '?:\${([A-Za-z0-9_]+)}';
-    const REGEX_NUM         = '(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:[eE](?:\+|-)?[0-9]+)?(?:m(?:in|s)|[KkGgMm][Bb]?|[s|h|d|w|y])?';
-    const REGEX_DQUOTE      = '"';
-    const REGEX_HEREDOC     = '?:<<<([A-Za-z0-9_]+)\n';
-    const REGEX_BOOL        = '(?:true|false|yes|no|on|off)\b';
-    const REGEX_NULL        = 'null\b';
-    const REGEX_TOKEN       = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
-    const REGEX_ANY         = '.';
+    const REGEX_SPACE      = '[ \t\n\r]+';
+    const REGEX_COMMENT    = '(?://|\#).*';
+    const REGEX_COMMENT_ML = '/\*';
+    const REGEX_NAME       = '[A-Za-z_][A-Za-z0-9_]*';
+    const REGEX_VAR        = '?:\${([A-Za-z0-9_]+)}';
+    const REGEX_NUM        = '(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:[eE](?:\+|-)?[0-9]+)?(?:m(?:in|s)|[KkGgMm][Bb]?|[s|h|d|w|y])?';
+    const REGEX_DQUOTE     = '"';
+    const REGEX_HEREDOC    = '?:<<<([A-Za-z0-9_]+)\n';
+    const REGEX_BOOL       = '(?:true|false|yes|no|on|off)\b';
+    const REGEX_NULL       = 'null\b';
+    const REGEX_TOKEN      = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
+    const REGEX_ANY        = '.';
 
     private $textBuffer;
 
@@ -43,31 +43,31 @@ class Lexer extends AbstractLexer
                     $this->line += substr_count(substr($this->content, $this->count, $pos - $this->count + 2), "\n");
                     $this->count = $pos + 2;
                 },
-                self::REGEX_DQUOTE  => function () {
+                self::REGEX_DQUOTE => function () {
                     $this->begin(self::STATE_INSTRING);
                     $this->textBuffer = '';
                 },
-                self::REGEX_BOOL    => function (&$yylval) {
+                self::REGEX_BOOL => function (&$yylval) {
                     $yylval = TypeCaster::toBool($yylval);
 
                     return Token::T_BOOL;
                 },
-                self::REGEX_NULL    => function (&$yylval) {
+                self::REGEX_NULL => function (&$yylval) {
                     $yylval = null;
 
                     return Token::T_NULL;
                 },
-                self::REGEX_NUM     => function (&$yylval) {
+                self::REGEX_NUM => function (&$yylval) {
                     $yylval = TypeCaster::toNum($yylval);
 
                     return Token::T_NUM;
                 },
-                self::REGEX_NAME    => function () {
+                self::REGEX_NAME => function () {
                     return Token::T_NAME;
                 },
                 self::REGEX_HEREDOC => function (&$yylval) {
                     $needle = "\n" . $yylval;
-                    $pos    = strpos($this->content, $needle, $this->count);
+                    $pos = strpos($this->content, $needle, $this->count);
                     if (false === $pos) {
                         $this->line += substr_count(substr($this->content, $this->count), "\n");
                         $this->error('Unterminated HEREDOC');
@@ -79,21 +79,21 @@ class Lexer extends AbstractLexer
 
                     return Token::T_END_STR;
                 },
-                self::REGEX_TOKEN   => function ($yylval) {
+                self::REGEX_TOKEN => function ($yylval) {
                     return $yylval;
                 },
                 self::REGEX_VAR => function () {
                     return Token::T_VAR;
                 },
-                self::REGEX_ANY     => function ($yylval) {
+                self::REGEX_ANY => function ($yylval) {
                     $this->error('Unexpected char \'' . $yylval . '\'');
                 },
-                self::EOF           => function () {
+                self::EOF => function () {
                     return Token::T_EOF;
                 },
             ],
             self::STATE_INSTRING => [
-                '[^\\\"$]+'          => function (&$yylval) {
+                '[^\\\"$]+' => function (&$yylval) {
                     $this->textBuffer .= $yylval;
                     if ('$' == substr($this->content, $this->count, 1)) {
                         $yylval = $this->textBuffer;
@@ -102,7 +102,7 @@ class Lexer extends AbstractLexer
                         return Token::T_STRING;
                     }
                 },
-                '?:\\\(.)'          => function ($yylval) {
+                '?:\\\(.)' => function ($yylval) {
                     switch ($yylval) {
                         case 'n':
                             $this->textBuffer .= "\n";
@@ -129,7 +129,7 @@ class Lexer extends AbstractLexer
                                 $this->textBuffer .= $this->fromCharCode($utf);
                                 break;
                             }
-                            /* No break */
+                            /* no break */
                         default:
                             $this->textBuffer .= '\\' . $yylval;
                             break;
@@ -145,13 +145,13 @@ class Lexer extends AbstractLexer
 
                     $this->textBuffer .= $yylval;
                 },
-                self::REGEX_DQUOTE  => function (&$yylval) {
+                self::REGEX_DQUOTE => function (&$yylval) {
                     $yylval = $this->textBuffer;
                     $this->begin(self::STATE_INITITAL);
 
                     return Token::T_END_STR;
                 },
-                self::EOF           => function () {
+                self::EOF => function () {
                     $this->error('Unterminated string');
                 },
             ],
@@ -161,7 +161,7 @@ class Lexer extends AbstractLexer
     private function fromCharCode($bytes)
     {
         switch (true) {
-            case ((0x7F & $bytes) == $bytes):
+            case (0x7F & $bytes) == $bytes:
                 return chr($bytes);
 
             case (0x07FF & $bytes) == $bytes:

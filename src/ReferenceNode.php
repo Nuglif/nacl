@@ -4,7 +4,7 @@ namespace Nuglif\Nacl;
 
 class ReferenceNode extends Node
 {
-    const ROOT        = '/';
+    const ROOT = '/';
 
     private $path;
     private $isResolving = false;
@@ -42,7 +42,7 @@ class ReferenceNode extends Node
         }
 
         $this->isResolving = true;
-        $value = $this->isAbsolute() ? $this->getRoot() : $this->getParent();
+        $value             = $this->isAbsolute() ? $this->getRoot() : $this->getParent();
 
         foreach (explode('/', ltrim($this->path, self::ROOT)) as $path) {
             switch ($path) {
@@ -66,12 +66,11 @@ class ReferenceNode extends Node
 
         $this->isResolving = false;
         $this->isResolved  = true;
-        $this->value = $value;
+        $this->value       = $value;
     }
 
     private function isAbsolute()
     {
         return self::ROOT === substr($this->path, 0, 1);
     }
-
 }

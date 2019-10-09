@@ -25,8 +25,8 @@ class Token
 
     public static function getLiteral($type)
     {
-        $refClass  = new \ReflectionClass(self::class);
-        $names     = array_flip($refClass->getConstants());
+        $refClass = new \ReflectionClass(self::class);
+        $names    = array_flip($refClass->getConstants());
 
         if (isset($names[$type])) {
             return $names[$type];

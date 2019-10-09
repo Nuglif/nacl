@@ -4,17 +4,17 @@ namespace Nuglif\Nacl;
 
 class OperationNode extends Node
 {
-    const ADD         = '+';
-    const SUB         = '-';
-    const OR_OPERATOR = '|';
-    const AND_OPERATOR         = '&';
-    const SHIFT_LEFT  = '<<';
-    const SHIFT_RIGHT = '>>';
-    const MOD         = '%';
-    const DIV         = '/';
-    const MUL         = '*';
-    const POW         = '**';
-    const CONCAT      = '.';
+    const ADD          = '+';
+    const SUB          = '-';
+    const OR_OPERATOR  = '|';
+    const AND_OPERATOR = '&';
+    const SHIFT_LEFT   = '<<';
+    const SHIFT_RIGHT  = '>>';
+    const MOD          = '%';
+    const DIV          = '/';
+    const MUL          = '*';
+    const POW          = '**';
+    const CONCAT       = '.';
 
     private $left;
     private $right;
@@ -22,14 +22,14 @@ class OperationNode extends Node
 
     public function __construct($left, $right, $operand)
     {
-        $this->left = $left;
-        $this->right = $right;
+        $this->left    = $left;
+        $this->right   = $right;
         $this->operand = $operand;
     }
 
     public function getNativeValue()
     {
-        $left = $this->left instanceof Node ? $this->left->getNativeValue() : $this->left;
+        $left  = $this->left instanceof Node ? $this->left->getNativeValue() : $this->left;
         $right = $this->right instanceof Node ? $this->right->getNativeValue() : $this->right;
 
         switch ($this->operand) {

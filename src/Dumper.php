@@ -14,17 +14,17 @@ class Dumper
     /**
      * @var string
      */
-    private $indentStr     = '  ';
+    private $indentStr = '  ';
 
     /**
      * @var string
      */
-    private $assign        = ' ';
+    private $assign = ' ';
 
     /**
      * @var string
      */
-    private $separator     = ';';
+    private $separator = ';';
 
     /**
      * @var string
@@ -147,7 +147,7 @@ class Dumper
         ++$this->depth;
         for ($i = 0; $i < $count; ++$i) {
             $str .= $this->indent() . rtrim($this->dumpVar($var[$i]), $this->separator);
-            if ($count-1 !== $i) {
+            if ($count - 1 !== $i) {
                 $str .= $this->listSeparator;
             }
             $str .= $this->eol();

@@ -13,8 +13,8 @@ class MacroNode extends Node
     public function __construct(callable $callback, $param, ObjectNode $options)
     {
         $this->callback = $callback;
-        $this->param = $param;
-        $this->options = $options;
+        $this->param    = $param;
+        $this->options  = $options;
     }
 
     public function execute()
@@ -39,7 +39,7 @@ class MacroNode extends Node
 
     private function resolve()
     {
-        $callback = $this->callback;
+        $callback    = $this->callback;
         $this->value = $callback(
             $this->param instanceof Node ? $this->param->getNativeValue() : $this->param,
             $this->options->getNativeValue()

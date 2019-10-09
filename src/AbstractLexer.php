@@ -10,8 +10,8 @@ abstract class AbstractLexer
     private $regexes   = [];
     private $tokenMaps = [];
 
-    private $state   = self::STATE_INITITAL;
-    private $stack   = [];
+    private $state = self::STATE_INITITAL;
+    private $stack = [];
 
     protected $line;
     protected $content;
@@ -47,7 +47,7 @@ abstract class AbstractLexer
                 for ($i = 1; '' === $matches[$i]; ++$i) {
                 }
                 $this->count += strlen($matches[0]);
-                $this->line += substr_count($matches[0], "\n");
+                $this->line  += substr_count($matches[0], "\n");
             } else {
                 $i       = 0;
                 $matches = [ '' ];
