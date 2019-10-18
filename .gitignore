@@ -1,3 +1,4 @@
 /vendor/
 tests/ucl/*.out
 /reports
+/composer.lock
