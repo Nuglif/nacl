@@ -2,6 +2,9 @@
 Nuglif Application Configuration Language (NACL)
 ================================================
 
+[![Build Status](https://travis-ci.com/Nuglif/nacl.svg?branch=master)](https://travis-ci.com/Nuglif/nacl)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 *NACL* is a configuration data language intended to be both human and machine friendly. Although it's a *JSON* superset which means that *JSON* can be used as valid input to the *NACL* parser, the primary motivation behind NACL is representation and interpretation of configuration data, by opposition to traditional data representation languages like JSON or YAML, that define themselves as _data object representation_ and _data serialization respectively_, which would belong to the general data representation languages domain, and thus quickly show weaknesses within the application configuration domain.
 
 Thanks to _Vsevolod Stakhov_ who created UCL after having felt that _XML_, as a configuration language, wasn't up to the task. *NACL* is heavily inspired by _Vsevolod Stakhov's_ [*UCL*](https://github.com/vstakhov/libucl) (Universal Configuration Language).
