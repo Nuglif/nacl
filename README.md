@@ -325,12 +325,12 @@ which will be a _JSON_ equivalent to
 
 ```json
 {
-	"development" {
+	"development": {
 		"server": {
 			"debug": true
 		}
 	},
-	"production" {
+	"production": {
 		"server": {
 			"url": "example.com",
 			"port": 80
@@ -424,7 +424,7 @@ will assign the content of the `welcome.tpl` file to the `template` variable.  I
 
 ```json
 {
-	"email" {
+	"email": {
 		"template": "Welcome my friend"
 	}
 }
