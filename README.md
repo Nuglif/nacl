@@ -300,6 +300,24 @@ production {
 }
 ```
 
+which could also be an _NACL_ equivalent of
+
+```nacl
+development {
+	server {
+		debug on;
+	}
+}
+production {
+	server {
+		url "example.com";
+	}
+}
+production server {
+	port 80;
+}
+```
+
 which will be a _JSON_ equivalent to
 
 ```json
@@ -322,13 +340,13 @@ which will be a _JSON_ equivalent to
 
 _NACL_ offers some baseline macros, the _.ref_, _.include_, _.file_ and _.env_ Macros.
 
-To differentiate them from keys and other language elements, macros names begin with a dot. They expect one value, and possibly distinct optional parameters.
+To differentiate them from keys and other language elements, macros names begin with a dot. They expect one value (which can be a primitive or a non-primitive), and possibly distinct optional parameters.
 
 For example 
 
 ```nacl
-.a_macro_name (param1: foo, param2: bar) "the one value"
-``` 
+.a_macro_name (param1: foo, param2: bar) "the primitive, array or object value"
+```
 
 would be a general _NACL_ macro form representation.
 
