@@ -540,8 +540,8 @@ $config = $parser->parseFile('application.conf');
 
 # Authors
 
-* **[Pierrick Charron](https://github.com/adoy)** (pierrick@adoy.net) - Initial work
-* **[Charle Demers](https://github.com/cdemers)**  (charle.demers@gmail.com) - Initial work
+* _**[Pierrick Charron](https://github.com/adoy)** (pierrick@adoy.net) - Initial work_
+* _**[Charle Demers](https://github.com/cdemers)**  (charle.demers@gmail.com) - Initial work_
 
 # License
 
