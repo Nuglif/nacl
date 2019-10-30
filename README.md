@@ -537,3 +537,16 @@ $config = $parser->parseFile('application.conf');
 
 ```
 
+
+# Authors
+
+* **[Pierrick Charron](https://github.com/adoy)** (pierrick@adoy.net) - Initial work
+* **[Charle Demers](https://github.com/cdemers)**  (charle.demers@gmail.com) - Initial work
+
+# License
+
+This project is licensed under the MIT License - for the full copyright and license information, please view the [LICENSE](LICENSE.md) file that was distributed with this source code.
+
+---
+_Copyrights 2019 Nuglif (2018) Inc. All rights reserved._
+
