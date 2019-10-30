@@ -13,27 +13,30 @@ This project contains both the _NACL_ specification, and it's implementation as 
 Table of content
 ----------------
 
-* [Example](#example)
-* [Install](#install)
-* [Usage](#usage)
-* [Additions to the JSON syntax](#additions-to-the-json-syntax)
-  - [Explicit root object](#explicit-root-object)
-  - [Unquoted strings](#unquoted-strings)
-  - [Multiline string](#multiline-string)
-  - [Values are assigned using either `=` `:` or no sign](#values-are-assigned-using-either-or-no-sign)
-  - [Separator](#separator)
-  - [Variables](#variables)
-  - [Comments](#comments)
-  - [Boolean values](#boolean-values)
-  - [Multipliers](#multipliers)
-  - [Object merge](#object-merge)
-  - [Named keys hierarchy](#named-keys-hierarchy)
-  - [Macros](#macros)
-  	- [Include macro](#include-macro)
-  	- [Reference macro](#reference-macro)
-  	- [File macro](#file-macro)
-  	- [Env macro](#env-macro)
-  	- [Extending NACL with your own macro](#extending-nacl-with-your-own-macro)
+
+- [Nuglif Application Configuration Language (NACL)](#nuglif-application-configuration-language--nacl-)
+  * [_NACL_ Example Source for the Impatient](#-nacl--example-source-for-the-impatient)
+  * [_NACL_ Extensions to the _JSON_ Syntax](#-nacl--extensions-to-the--json--syntax)
+    + [The Implicit Root Object](#the-implicit-root-object)
+    + [The Unquoted Strings](#the-unquoted-strings)
+    + [The Multiline Strings](#the-multiline-strings)
+    + [The Optional Values Assignments Symbol](#the-optional-values-assignments-symbol)
+    + [The Separator Symbol](#the-separator-symbol)
+    + [The Variables](#the-variables)
+    + [The Comments](#the-comments)
+    + [The Boolean Values](#the-boolean-values)
+    + [The Multipliers](#the-multipliers)
+    + [The _NACL_ Object Structure Will Merge](#the--nacl--object-structure-will-merge)
+    + [Using Key Names for Hierarchical Declaration](#using-key-names-for-hierarchical-declaration)
+  * [The _NACL_ Macros](#the--nacl--macros)
+    + [The _.ref_ Macro _(Referencing)_](#the--ref--macro---referencing--)
+    + [The _.include_ Macro _(Evaluated Inclusions)_](#the--include--macro---evaluated-inclusions--)
+    + [The _.file_ Macro _(Unevaluated Inclusions)_](#the--file--macro---unevaluated-inclusions--)
+    + [The _.env_ Macro _(Environment Variables)_](#the--env--macro---environment-variables--)
+- [The PHP Library](#the-php-library)
+  * [Installation](#installation)
+  * [Usage](#usage)
+      - [Extending NACL With Your Own Macros](#extending-nacl-with-your-own-macros)
 
 ##  _NACL_ Example Source for the Impatient
 
@@ -485,7 +488,7 @@ $config = $parser->parseFile('application.conf');
 
 
 
-#### Extending NACL with your own macro
+#### Extending NACL With Your Own Macros
 
 It's easy to extend NACL using your own macro.
 
