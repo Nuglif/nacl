@@ -2,3 +2,4 @@
 tests/ucl/*.out
 /reports
 /composer.lock
+/.phpcs-cache
