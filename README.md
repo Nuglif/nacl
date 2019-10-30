@@ -19,7 +19,7 @@ Table of content
 
 - [Nuglif Application Configuration Language (NACL)](#nuglif-application-configuration-language-nacl)
   * [_NACL_ Example Source for the Impatient](#nacl-example-source-for-the-impatient)
-  * [_NACL_ Extensions to the _JSON_ Syntax](#nacl-extensions-to-the--json--syntax)
+  * [_NACL_ Extensions to the _JSON_ Syntax](#nacl-extensions-to-the-json-syntax)
     + [The Implicit Root Object](#the-implicit-root-object)
     + [The Unquoted Strings](#the-unquoted-strings)
     + [The Multiline Strings](#the-multiline-strings)
