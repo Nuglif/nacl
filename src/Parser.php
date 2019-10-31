@@ -131,7 +131,7 @@ class Parser
                     $continue = $this->consumeOptionalSeparator();
                     break;
                 case '.':
-                    $val = $this->parseMacro($object);
+                    $val = $this->parseMacro();
                     if ($val instanceof MacroNode) {
                         $val = $val->execute();
                     }
@@ -378,7 +378,7 @@ class Parser
         if (file_exists($this->lexer->getFilename())) {
             chdir(dirname($this->lexer->getFilename()));
         }
-        $files = array_map('realpath', glob($pattern));
+        $files = array_map('realpath', glob($pattern) ?: []);
         chdir($cwd);
 
         return $files;
