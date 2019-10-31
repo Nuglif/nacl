@@ -16,7 +16,6 @@ namespace Nuglif\Nacl;
 abstract class Node
 {
     private $parent;
-    private $root;
 
     public function setParent(Node $parent)
     {
