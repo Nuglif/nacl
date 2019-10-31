@@ -1,6 +1,6 @@
 {
   "name": "nuglif/nacl",
-  "description": "Nuglif Application Configuration Language",
+  "description": "Nuglif Application Configuration Language (NACL) is a configuration data language intended to be both human and machine friendly.",
   "type": "library",
   "license": "MIT",
   "authors": [
