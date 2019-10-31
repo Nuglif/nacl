@@ -321,16 +321,16 @@ class Parser
         return $result;
     }
 
-    private function doInclude($file, $options)
+    private function doInclude($fileName, $options)
     {
         $value = new ObjectNode;
 
         if (isset($options['glob']) ? $options['glob'] : false) {
-            $files = $this->glob($file);
+            $files = $this->glob($fileName);
         } else {
-            if (!$path = $this->resolvePath($file)) {
+            if (!$path = $this->resolvePath($fileName)) {
                 if (isset($options['required']) ? $options['required'] : true) {
-                    $this->error('Unable to include file \'' . $file . '\'');
+                    $this->error('Unable to include file \'' . $fileName . '\'');
                 }
 
                 return $value;
