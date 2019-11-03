@@ -254,14 +254,14 @@ For example
 
 ```nacl
 foo {
-	non-object-value-a true;
-	non-object-value-b [ 1, 2 ];
-	object-value { c: "c"}
+	"non-object-value-a" true;
+	"non-object-value-b" [ 1, 2 ];
+	"object-value" { c: "c"}
 }
 foo {
-	non-object-value-a false;
-	non-object-value-b [ 3, 4 ];
-	object-value { x: "x" }
+	"non-object-value-a" false;
+	"non-object-value-b" [ 3, 4 ];
+	"object-value" { x: "x" }
 }
 ```
 
