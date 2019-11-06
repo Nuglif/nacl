@@ -22,7 +22,7 @@ class DumperTest extends \PHPUnit\Framework\TestCase
      * @dataProvider getJsonFiles
      * @test
      */
-    public function NaclIsJsonCompatible($options, $json)
+    public function parsedDumpOutputIsEqualToDumpInput($options, $json)
     {
         $expected = json_decode($json, true);
 
