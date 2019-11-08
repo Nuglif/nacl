@@ -64,7 +64,7 @@ class ReferenceNode extends Node
                     $value = $value->getParent();
                     break;
                 default:
-                    if (!$value instanceof ObjectNode || !isset($value[$path])) {
+                    if (!isset($value[$path])) {
                         throw new ReferenceException(sprintf('Undefined property: %s.', $this->path), $this->file, $this->line);
                     }
                     $value = $value[$path];
