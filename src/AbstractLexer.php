@@ -15,13 +15,13 @@ namespace Nuglif\Nacl;
 
 abstract class AbstractLexer
 {
-    const STATE_INITITAL = 0;
+    const STATE_INITIAL = 0;
     const EOF            = '<<EOF>>';
 
     private $regexes   = [];
     private $tokenMaps = [];
 
-    private $state = self::STATE_INITITAL;
+    private $state = self::STATE_INITIAL;
     private $stack = [];
 
     protected $line;

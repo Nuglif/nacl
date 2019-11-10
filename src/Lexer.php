@@ -15,7 +15,7 @@ namespace Nuglif\Nacl;
 
 class Lexer extends AbstractLexer
 {
-    const STATE_INITITAL  = 0;
+    const STATE_INITIAL  = 0;
     const STATE_INSTRING  = 1;
     const STATE_INHEREDOC = 2;
 
@@ -42,7 +42,7 @@ class Lexer extends AbstractLexer
     protected function getRules()
     {
         return [
-            self::STATE_INITITAL => [
+            self::STATE_INITIAL => [
                 self::REGEX_SPACE      => false,
                 self::REGEX_COMMENT    => false,
                 self::REGEX_COMMENT_ML => function () {
@@ -158,7 +158,7 @@ class Lexer extends AbstractLexer
                 },
                 self::REGEX_DQUOTE => function (&$yylval) {
                     $yylval = $this->textBuffer;
-                    $this->begin(self::STATE_INITITAL);
+                    $this->begin(self::STATE_INITIAL);
 
                     return Token::T_END_STR;
                 },
