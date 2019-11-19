@@ -31,10 +31,6 @@ class Parser
             throw new Exception('Macro with the same name already registered.');
         }
 
-        if ($macro instanceof ParserAware) {
-            $macro->setParser($this);
-        }
-
         $this->macro[$macro->getName()] = [ $macro, 'execute' ];
     }
 
@@ -310,6 +306,9 @@ class Parser
             case 'ref':
                 $result = new ReferenceNode($param, $this->lexer->getFilename(), $this->lexer->getLine());
                 break;
+            case 'file':
+                $result = $this->doIncludeFileContent($param, $options);
+                break;
             default:
                 if (!isset($this->macro[$name])) {
                     $this->error('Unknown macro \'' . $name . '\'');
@@ -319,6 +318,19 @@ class Parser
         }
 
         return $result;
+    }
+
+    private function doIncludeFileContent($fileName, $options)
+    {
+        if ($fileName = $this->resolvePath($fileName)) {
+            return file_get_contents($fileName);
+        }
+
+        if (array_key_exists('default', $options)) {
+            return $options['default'];
+        }
+
+        $this->error("Unable to read file '${parameter}'");
     }
 
     private function doInclude($fileName, $options)

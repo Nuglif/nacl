@@ -25,7 +25,6 @@ class Nacl
     public static function createParser()
     {
         $parser = new Parser;
-        $parser->registerMacro(new Macros\File);
         $parser->registerMacro(new Macros\Env);
         $parser->registerMacro(new Macros\Constant);
 

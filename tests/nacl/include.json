@@ -9,5 +9,6 @@
         "key3": "val",
         "key4": "val"
     },
-    "array": []
+    "array": [],
+    "include_with_file": {"f": "testcontent"}
 }
