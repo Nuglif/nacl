@@ -44,7 +44,11 @@ class Parser
      */
     public function parse($str, $filename = 'nacl string')
     {
-        $token = $this->token;
+        return $this->getAstFromString($str, $filename)->getNativeValue();
+    }
+
+    private function getAstFromString($str, $filename)
+    {
         $this->lexer->push($str, $filename);
         $this->nextToken();
 
@@ -56,9 +60,8 @@ class Parser
 
         $this->consume(Token::T_EOF);
         $this->lexer->pop();
-        $this->token = $token;
 
-        return $result->getNativeValue();
+        return $result;
     }
 
     public function parseFile($file)
@@ -337,7 +340,7 @@ class Parser
 
     private function doInclude($fileName, $options)
     {
-        $value = new ObjectNode;
+        $includeValue = new ObjectNode;
 
         if (isset($options['glob']) ? $options['glob'] : false) {
             $files = $this->glob($fileName);
@@ -347,31 +350,30 @@ class Parser
                     $this->error('Unable to include file \'' . $fileName . '\'');
                 }
 
-                return $value;
+                return $includeValue;
             }
 
             $files = [ $path ];
         }
 
         $token = $this->token;
+        $filenameKey = isset($options['filenameKey']) && $options['filenameKey'];
 
         foreach ($files as $file) {
-            $this->lexer->push(file_get_contents($file), $file);
-            $this->nextToken();
-            if ('[' == $this->token->type) {
-                $value = $this->parseArray();
-            } elseif ($value instanceof ObjectNode) {
-                $value = $value->merge($this->parseObject());
+            $value = $this->getAstFromString(file_get_contents($file), $file);
+
+            if ($filenameKey) {
+                $includeValue[pathinfo($file, PATHINFO_FILENAME)] = $value;
+            } elseif ($value instanceof ObjectNode && $includeValue instanceof ObjectNode) {
+                $includeValue = $includeValue->merge($value);
             } else {
-                $value = $this->parseObject();
+                $includeValue = $value;
             }
-            $this->consume(Token::T_EOF);
-            $this->lexer->pop();
         }
 
         $this->token = $token;
 
-        return $value;
+        return $includeValue;
     }
 
     public function resolvePath($file)
