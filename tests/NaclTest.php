@@ -211,4 +211,24 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
         Nacl::parse('foo .ref "bar";');
     }
+
+    /**
+     * @test
+     */
+    public function fileMacroWithUnexistingFile()
+    {
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Unable to read file \'unknown.txt\'');
+        Nacl::parse('foo .file "unknown.txt"');
+    }
+
+    /**
+     * @test
+     */
+    public function fileMacroWithUnexistingFileAndDefaultValue()
+    {
+        $result = Nacl::parse('foo .file (default: bar) "unknown.txt"');
+
+        $this->assertSame([ 'foo' => 'bar' ], $result);
+    }
 }

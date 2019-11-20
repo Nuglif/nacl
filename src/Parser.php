@@ -322,15 +322,16 @@ class Parser
 
     private function doIncludeFileContent($fileName, $options)
     {
-        if ($fileName = $this->resolvePath($fileName)) {
-            return file_get_contents($fileName);
+        if ($realpath = $this->resolvePath($fileName)) {
+            return file_get_contents($realpath);
         }
 
+        $options = $options->getNativeValue();
         if (array_key_exists('default', $options)) {
             return $options['default'];
         }
 
-        $this->error("Unable to read file '${parameter}'");
+        $this->error("Unable to read file '${fileName}'");
     }
 
     private function doInclude($fileName, $options)
