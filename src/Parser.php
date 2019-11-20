@@ -168,6 +168,7 @@ class Parser
      */
     private function parseValue($required = true, &$found = true)
     {
+        $value = null;
         $found = true;
         switch ($this->token->type) {
             case Token::T_STRING:
@@ -517,6 +518,7 @@ class Parser
      */
     private function parseMathFactor()
     {
+        $value = null;
         switch ($this->token->type) {
             case '(':
                 $this->nextToken();
