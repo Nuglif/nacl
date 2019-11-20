@@ -376,26 +376,28 @@ class Parser
 
     public function resolvePath($file)
     {
-        $cwd = getcwd();
-        if (file_exists($this->lexer->getFilename())) {
-            chdir(dirname($this->lexer->getFilename()));
-        }
-        $file = realpath($file);
-        chdir($cwd);
-
-        return $file;
+        return $this->relativeToCurrentFile(function () use ($file) {
+            return realpath($file);
+        });
     }
 
     private function glob($pattern)
+    {
+        return $this->relativeToCurrentFile(function () use ($pattern) {
+            return array_map('realpath', glob($pattern) ?: []);
+        });
+    }
+
+    private function relativeToCurrentFile(callable $cb)
     {
         $cwd = getcwd();
         if (file_exists($this->lexer->getFilename())) {
             chdir(dirname($this->lexer->getFilename()));
         }
-        $files = array_map('realpath', glob($pattern) ?: []);
+        $result = $cb();
         chdir($cwd);
 
-        return $files;
+        return $result;
     }
 
     /**
