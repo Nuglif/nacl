@@ -2,12 +2,15 @@
 
 namespace Nuglif\Nacl;
 
-define('TEST_CONST', 'value');
-putenv('TEST=valid');
-
 class NaclTest extends \PHPUnit\Framework\TestCase
 {
     private $parser;
+
+    public static function setUpBeforeClass()
+    {
+        define('TEST_CONST', 'value');
+        putenv('TEST=valid');
+    }
 
     public static function getJsonFiles()
     {
@@ -22,7 +25,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      * @dataProvider getJsonFiles
      * @test
      */
-    public function NaclIsJsonCompatible($jsonFile)
+    public function naclIsJsonCompatible($jsonFile)
     {
         $this->assertSame(
             json_decode(file_get_contents($jsonFile), true),
