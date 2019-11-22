@@ -133,7 +133,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Syntax error, unexpected \';\'');
 
-        Nacl::parse('foo;', 'file');
+        Nacl::parse('+;', 'file');
     }
 
     /**
@@ -149,12 +149,23 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testMacroInMoreGlobalScope()
+    public function scalarValueMacroInsideObjectNodeThrowParsingException()
     {
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Macro without assignation key must return an object');
 
-        Nacl::parse('.env unexistingenv');
+        Nacl::parse('foo bar; .env unexistingenv');
+    }
+
+    /**
+     * @test
+     */
+    public function contentAfterScalarRootValueThrowsParsingExcpetion()
+    {
+        $this->expectException(ParsingException::class);
+        $this->expectExceptionMessage('Syntax error, unexpected \'foo\' (T_NAME)');
+
+        Nacl::parse('.env unexistingenv; foo bar');
     }
 
     /**

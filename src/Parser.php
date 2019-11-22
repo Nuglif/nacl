@@ -39,14 +39,16 @@ class Parser
         $this->variables[$name] = $value;
     }
 
-    /**
-     * Nacl ::= Array | Object
-     */
     public function parse($str, $filename = 'nacl string')
     {
-        return $this->getAstFromString($str, $filename)->getNativeValue();
+        $result = $this->getAstFromString($str, $filename);
+
+        return $result instanceof Node ? $result->getNativeValue() : $result;
     }
 
+    /**
+     * Nacl ::= RootValue | InnerObject
+     */
     private function getAstFromString($str, $filename)
     {
         $this->lexer->push($str, $filename);
@@ -54,8 +56,18 @@ class Parser
 
         if ('[' == $this->token->type) {
             $result = $this->parseArray();
-        } else {
+        } elseif ('{' == $this->token->type) {
             $result = $this->parseObject();
+        } else {
+            $result = $this->parseRootValue(false, $found);
+            if (!$found) {
+                $result = $this->parseInnerObject();
+            } else {
+                $this->consumeOptionalSeparator();
+                if ($result instanceof ObjectNode) {
+                    $result = $this->parseInnerObject($result);
+                }
+            }
         }
 
         $this->consume(Token::T_EOF);
@@ -79,26 +91,66 @@ class Parser
     }
 
     /**
-     * Object       ::= "{" InnerObject "}" | InnerObject
-     * InnerObject  ::= [ KeyValueList [ Separator ] ]
-     * KeyValueList ::= KeyValue [ Separator KeyValueList ]
-     * KeyValue     ::= ( ( T_END_STR | T_NAME | T_VAR ) [ ":" | "=" ] Value ) | MacroCall
-     * Separator    ::= "," | ";"
+     * RootValue               ::= [ VariableAssignationList ] Value
+     * VariableAssignationList ::= VariableAssignation [ Separator [ VariableAssignationList ] ]
+     * VariableAssignation     ::= T_VAR OptionalAssignementOperator Value
+     */
+    private function parseRootValue($required = true, &$found = true)
+    {
+        $value = null;
+
+        do {
+            $found = true;
+            $continue = false;
+            switch ($this->token->type) {
+                case Token::T_VAR:
+                    $name = $this->token->value;
+                    $this->nextToken();
+                    $variableValueRequired = $this->consumeOptionalAssignementOperator();
+                    if (!$variableValueRequired && $this->consumeOptionalSeparator()) {
+                        $value = $this->getVariable($name);
+                        break;
+                    }
+                    $variableValue = $this->parseValue($variableValueRequired, $variableValueFound);
+                    if ($variableValueFound) {
+                        $this->setVariable($name, $variableValue);
+                        $continue = $this->consumeOptionalSeparator();
+                        $found = false;
+                        break;
+                    }
+                    $value = $this->getVariable($name);
+                    break;
+                default:
+                    $value = $this->parseValue($required, $found);
+                    if ($value instanceof MacroNode) {
+                        $value = $value->execute();
+                    }
+            }
+        } while ($continue);
+
+        return $value;
+    }
+
+    /**
+     * Object ::= "{" InnerObject "}"
      */
     private function parseObject()
     {
-        $opened = $this->consumeOptional('{');
+        $this->consume('{');
         $object = $this->parseInnerObject();
-        if ($opened) {
-            $this->consume('}');
-        }
+        $this->consume('}');
 
         return $object;
     }
 
-    private function parseInnerObject()
+    /**
+     * InnerObject  ::= [ KeyValueList ]
+     * KeyValueList ::= VariableAssignation|KeyValue [ Separator [ KeyValueList ] ]
+     * KeyValue     ::= ( ( T_END_STR | T_NAME ) OptionalAssignementOperator Value ) | MacroCall
+     */
+    private function parseInnerObject(ObjectNode $object = null)
     {
-        $object = new ObjectNode;
+        $object = $object ?: new ObjectNode;
         do {
             $name     = null;
             $continue = false;
@@ -148,7 +200,7 @@ class Parser
 
     /**
      * Array     ::= "[" [ ValueList ] "]"
-     * ValueList ::= Value [ Separator ValueList ]
+     * ValueList ::= Value [ Separator [ ValueList ] ]
      */
     private function parseArray()
     {
@@ -167,7 +219,7 @@ class Parser
     }
 
     /**
-     * Value ::= {T_END_STR | T_NAME }* ( String | Scalar | MathExpr | Variable | "{" InnerObject "}" | Array | MacroCall )
+     * Value ::= {T_END_STR | T_NAME }* ( String | Scalar | MathExpr | Variable | Object | Array | MacroCall )
      */
     private function parseValue($required = true, &$found = true)
     {
@@ -280,7 +332,7 @@ class Parser
     }
 
     /**
-     * MacroCall ::= "." T_NAME [ "(" [ Object ] ")" ] Value
+     * MacroCall ::= "." T_NAME [ "(" InnerObject ")" ] Value
      */
     private function parseMacro()
     {
@@ -518,7 +570,7 @@ class Parser
     }
 
     /**
-     * MathFactor ::= ( "(" MathExpr ")" ) | T_NUM | T_VAR | ( ("+"|"-") MathTerm ) [ "^" MathFactor ]
+     * MathFactor ::= (( "(" MathExpr ")" ) | T_NUM | T_VAR | ( ("+"|"-") MathTerm )) [ "^" MathFactor ]
      */
     private function parseMathFactor()
     {
@@ -565,6 +617,9 @@ class Parser
         $this->nextToken();
     }
 
+    /**
+     * Separator ::= [ ";" | "," ]
+     */
     private function consumeOptionalSeparator()
     {
         if (',' !== $this->token->type && ';' !== $this->token->type) {
@@ -576,6 +631,9 @@ class Parser
         return true;
     }
 
+    /**
+     * OptionalAssignementOperator ::= [ ":" | "=" ]
+     */
     private function consumeOptionalAssignementOperator()
     {
         if (':' !== $this->token->type && '=' !== $this->token->type) {
