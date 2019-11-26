@@ -1,4 +1,5 @@
 
+  
 Nuglif Application Configuration Language (NACL)
 ================================================
 
@@ -34,10 +35,10 @@ Table of content
     + [The _NACL_ Object Structure Will Merge](#the-nacl-object-structure-will-merge)
     + [Using Key Names for Hierarchical Declaration](#using-key-names-for-hierarchical-declaration)
   * [The _NACL_ Macros](#the-nacl-macros)
-    + [The _.ref_ Macro _(Referencing)_](#the-ref-macro-referencing)
-    + [The _.include_ Macro _(Evaluated Inclusions)_](#the-include-macro-evaluated-inclusions)
-    + [The _.file_ Macro _(Unevaluated Inclusions)_](#the-file-macro-unevaluated-inclusions)
     + [The _.env_ Macro _(Environment Variables)_](#the-env-macro-environment-variables)
+    + [The _.file_ Macro _(Unevaluated Inclusions)_](#the-file-macro-unevaluated-inclusions)
+    + [The _.include_ Macro _(Evaluated Inclusions)_](#the-include-macro-evaluated-inclusions)
+    + [The _.ref_ Macro _(Referencing)_](#the-ref-macro-referencing)
 - [The PHP Library](#the-php-library)
   * [Installation](#installation)
   * [Usage](#usage)
@@ -69,30 +70,64 @@ application {
 
 Because _NACL_ is a superset of _JSON_, we will skim over the _JSON_ syntax itself and describe how the language was extended below.
 
-### The Implicit Root Object
+### The Types
 
-_NACL_ will provide an implicit `{}` root object.
+_NACL_ allows the same types as _JSON_, which are _string_, _number_, _object_, _array_, _boolean_ and the `null` value.
 
-For example
+### The Root Object
+
+_NACL_ allows any one of the supported types of values as root elements of a configuration file.
+
+Below are valid _NACL_ examples
+
 ```nacl
-"host": "localhost"
-```
-will be equivalent to
-```json
-{"host": "localhost"}
+"Hello, World!"
 ```
 
-**Note:** An empty _NACL_ file is valid and is equivalent to an empty JSON object `{}`.
+```nacl
+true
+```
+
+```nacl
+[ 1000, 2000 ]
+```
+
+```nacl
+{ "foo": "bar" }
+```
+
+However, unlike _JSON_, _NACL_ will provide an implicit `{}` root object in two cases: when the _NACL_ source file is composed one or more key/value pairs, for example
+
+```nacl
+"host": "localhost",
+"port": 80
+```
+
+will be equivalent to
+
+```json
+{"host": "localhost", "port": 80}
+```
+
+or when the _NACL_ source is an empty NACL file, which will be the _JSON_ equivalent to
+
+```json
+{}
+```
+
 
 ### The Unquoted Strings
 
 _NACL_ allows unquoted strings for single word keys and values.
 
 For example
+
 ```
 host: localhost
 ```
+
 will be equivalent to
+
 ```json
 {"host": "localhost"}
 ```
@@ -386,15 +421,16 @@ _NACL_ offers the `.include` macro, which can be used to include and evaluate _N
 
 | Option     | Default value | Description                                                                |
 |------------|---------------|----------------------------------------------------------------------------|
-| `required` | `true`        | If `false` nacl will not trigger any error if included file doesn't exist. |
-| `glob`     | `false`       | If `true` nacl will include all files that match the pattern. If the provided inclusion path has a wildcard while `glob` is set to false, _NACL_ will attempt to include a file matching the exact name, including its wildcard.              |
+| `required` | `true`        | If `false` _NACL_ will not trigger any error if included file doesn't exist. |
+| `glob`     | `false`       | If `true` _NACL_ will include all files that match the pattern. If the provided inclusion path has a wildcard while `glob` is set to false, _NACL_ will attempt to include a file matching the exact name, including its wildcard.              |
+| `filenameKey` | `false`        | If `true`, _NACL_ will prefix the included file (or possibly _files_ if `glob` is `true`) with a key named after the included file name (without the extension). |
 
 For example
 
 ```nacl
 .include "file.conf";
 .include (required: false) "file.override.conf";
-.include (glob: true) "conf.d/*.conf";
+.include (glob: true, filenameKey: true) "conf.d/*.conf";
 ```
 
 As an other example, if you have a file named `file.conf` that contains only `foo: "bar";`, then the following _NACL_ example
@@ -412,6 +448,22 @@ will become the _JSON_ equivalent of
 	"baz": "qux"
 }
 ```
+
+As an example usage of `glob: true` and `filenameKey: true`, say you have a file named `person1.conf`  containing `"alice";` and a second file named `person2.conf` containing `"bob"`, and the following third _NACL_ file including them
+
+```nacl
+.include(glob: true, filenameKey: true) "*.conf";
+```
+
+will become the _JSON_ equivalent of
+
+```json
+{
+	"person1": "alice",
+	"person2": "bob"
+}
+```
+
 
 ### The _.file_ Macro _(Unevaluated Inclusions)_
 
@@ -442,7 +494,7 @@ _NACL_ offers the `.env` macro, which can be used to evaluate the specified envi
 | Option    | Default value | Description                                                                                |
 |-----------|---------------|--------------------------------------------------------------------------------------------|
 | `default` | -             | If the environment variable doesn't exist, this default value will be returned instead.             |
-| `type`    | -             | Since environment variables are always string types, setting a  type will cast the string value to the provided type within _NACL_. |
+| `type`    | `string`      | Since environment variables are always string types, setting a  type will cast the string value to the provided type within _NACL_. |
 
 For example
 
@@ -554,4 +606,3 @@ This project is licensed under the MIT License - for the full copyright and lice
 
 ---
 _Copyrights 2019 Nuglif (2018) Inc. All rights reserved._
-
