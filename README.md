@@ -92,7 +92,7 @@ true
 { "foo": "bar" }
 ```
 
-However, unlike _JSON_, _NACL_ will provide an implicit `{}` root object in two cases: when the _NACL_ source file is composed by one or more key/value pairs, for example
+However, unlike _JSON_, _NACL_ will provide an implicit `{}` root object in two cases: when the _NACL_ source file is composed of one or more key/value pairs, for example
 
 ```nacl
 "host": "localhost",
@@ -114,7 +114,7 @@ or when the _NACL_ source is an empty _NACL_ file, which will be the _JSON_ equi
 
 ### The Unquoted Strings
 
-_NACL_ allows unquoted strings for single word keys and values. Unquoted strings starts with an ASCII letter or underscore, followed by any number of ASCII letters, ASCII digits, underscores, or dashes. As a regular expression, it would be expressed thus: `^[A-Za-z_][A-Za-z0-9_-]*$`.
+_NACL_ allows unquoted strings for single word keys and values. Unquoted strings start with an ASCII letter or underscore, followed by any number of ASCII letters, ASCII digits, underscores, or dashes. As a regular expression, it would be expressed thus: `^[A-Za-z_][A-Za-z0-9_-]*$`.
 
 For example
 
