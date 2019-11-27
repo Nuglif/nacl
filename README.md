@@ -1,5 +1,3 @@
-
-  
 Nuglif Application Configuration Language (NACL)
 ================================================
 
@@ -8,21 +6,19 @@ Nuglif Application Configuration Language (NACL)
 [![Latest Stable Version](https://poser.pugx.org/nuglif/nacl/v/stable)](https://packagist.org/packages/nuglif/nacl)
 [![Code Coverage](https://scrutinizer-ci.com/g/Nuglif/nacl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Nuglif/nacl/?branch=master)
 
-*NACL* is a configuration data language intended to be both human and machine friendly. Although it's a *JSON* superset which means that *JSON* can be used as valid input to the *NACL* parser, the primary motivation behind NACL is representation and interpretation of configuration data, by opposition to traditional data representation languages like JSON or YAML, that define themselves as _data object representation_ and _data serialization respectively_, which would belong to the general data representation languages domain, and thus quickly show weaknesses within the application configuration domain.
+*NACL* is a configuration data language intended to be both human and machine friendly. Although it's a *JSON* superset which means that *JSON* can be used as valid input to the *NACL* parser, the primary motivation behind *NACL* is representation and interpretation of configuration data, by opposition to traditional data representation languages like JSON or YAML, that define themselves as _data object representation_ and _data serialization respectively_, which would belong to the general data representation languages domain, and thus quickly show weaknesses within the application configuration domain.
 
 Thanks to _Vsevolod Stakhov_ who created UCL after having felt that _XML_, as a configuration language, wasn't up to the task. *NACL* is heavily inspired by _Vsevolod Stakhov's_ [*UCL*](https://github.com/vstakhov/libucl) (Universal Configuration Language).
 
 This project contains both the _NACL_ specification, and it's implementation as a ___PHP___ library. A detailed *NACL* grammar reference is also available in [EBNF](EBNF.md).
 
-
-
 Table of content
 ----------------
-
 
 - [Nuglif Application Configuration Language (NACL)](#nuglif-application-configuration-language-nacl)
   * [_NACL_ Example Source for the Impatient](#nacl-example-source-for-the-impatient)
   * [_NACL_ Extensions to the _JSON_ Syntax](#nacl-extensions-to-the-json-syntax)
+    + [The types](#the-types)
     + [The Implicit Root Object](#the-implicit-root-object)
     + [The Unquoted Strings](#the-unquoted-strings)
     + [The Multiline Strings](#the-multiline-strings)
@@ -96,7 +92,7 @@ true
 { "foo": "bar" }
 ```
 
-However, unlike _JSON_, _NACL_ will provide an implicit `{}` root object in two cases: when the _NACL_ source file is composed one or more key/value pairs, for example
+However, unlike _JSON_, _NACL_ will provide an implicit `{}` root object in two cases: when the _NACL_ source file is composed by one or more key/value pairs, for example
 
 ```nacl
 "host": "localhost",
@@ -109,7 +105,7 @@ will be equivalent to
 {"host": "localhost", "port": 80}
 ```
 
-or when the _NACL_ source is an empty NACL file, which will be the _JSON_ equivalent to
+or when the _NACL_ source is an empty _NACL_ file, which will be the _JSON_ equivalent to
 
 ```json
 {}
@@ -118,7 +114,7 @@ or when the _NACL_ source is an empty NACL file, which will be the _JSON_ equiva
 
 ### The Unquoted Strings
 
-_NACL_ allows unquoted strings for single word keys and values.
+_NACL_ allows unquoted strings for single word keys and values. Unquoted strings starts with an ASCII letter or underscore, followed by any number of ASCII letters, ASCII digits, underscores, or dashes. As a regular expression, it would be expressed thus: `^[A-Za-z_][A-Za-z0-9_-]*$`.
 
 For example
 
@@ -149,23 +145,23 @@ will be equivalent to
 {"text": "This is\na multiline\nstring"}
 ```
 
-**Note:** If you have really long text, you might want to put the text in a single file and use the [file macro](#file-macro).
+**Note:** If you have really long text, you might want to put the text in a single file and use the [file macro](#the-file-macro-unevaluated-inclusions).
 
 ### The Optional Values Assignments Symbol
 
-_NACL_ allows value assignment using the equal sign `=` or the the column `:`, however this assignment sign is optional and _NACL_ allows you to leave the assignment sign out entirely.
+_NACL_ allows value assignment using the column `:` or the equal sign `=`, however this assignment sign is optional and _NACL_ allows you to leave the assignment sign out entirely.
 
 For example
 ```nacl
-host: localhost;
+host: localhost
 ```
 is equivalent to
 ```nacl
-host = localhost;
+host = localhost
 ```
 and also equivalent to
 ```nacl
-host localhost;
+host localhost
 ```
 which are all equivalents to
 ```json
@@ -175,7 +171,7 @@ which are all equivalents to
 
 ### The Separator Symbol
 
-_NACL_ statements (array or object elements) are separated using either `;` or `,` and _NACL_ allows statements terminators, so you can safely use an extra separator after the last element of an array or object.
+_NACL_ statements (array or object elements) are separated using either `,` or `;` and _NACL_ allows statements terminators, so you can safely use an extra separator after the last element of an array or object.
 
 For example
 ```nacl
@@ -385,7 +381,7 @@ _NACL_ offers some baseline macros, the _.ref_, _.include_, _.file_ and _.env_ M
 
 To differentiate them from keys and other language elements, macros names begin with a dot. They expect one value (which can be a primitive or a non-primitive), and possibly distinct optional parameters.
 
-For example 
+For example
 
 ```nacl
 .a_macro_name (param1: foo, param2: bar) "the primitive, array or object value"
@@ -417,7 +413,7 @@ which will become the _JSON_ equivalent of
 
 ### The _.include_ Macro _(Evaluated Inclusions)_
 
-_NACL_ offers the `.include` macro, which can be used to include and evaluate _NACL_ files in other _NACL_ files.  The `.include` macro has two optional parameters which are described in the table below.
+_NACL_ offers the `.include` macro, which can be used to include and evaluate _NACL_ files in other _NACL_ files.  The `.include` macro has three optional parameters which are described in the table below.
 
 | Option     | Default value | Description                                                                |
 |------------|---------------|----------------------------------------------------------------------------|
@@ -503,7 +499,7 @@ port .env (default: 80, type: int) SERVER_PORT;
 title .env TITLE;
 ```
 
-on a system where the `SERVER_PORT` is undefined, and `TITLE` is set to `"300"`, the the previous _NACL_ example would become the _JSON_ equivalent of
+on a system where the `SERVER_PORT` is undefined, and `TITLE` is set to `"300"`, the previous _NACL_ example would become the _JSON_ equivalent of
 
 ```json
 {
@@ -524,7 +520,7 @@ To install with composer:
 composer require nuglif/nacl
 ```
 
-The library will work on on versions of PHP from 5.6 to 7.0 or newer.
+The library will work on versions of PHP from 5.6 to 7.0 or newer.
 
 ## Usage
 
@@ -545,9 +541,9 @@ $config = $parser->parseFile('application.conf');
 
 
 
-#### Extending NACL With Your Own Macros
+#### Extending _NACL_ With Your Own Macros
 
-It's easy to extend NACL using your own macro.
+It's easy to extend _NACL_ using your own macro.
 
 ```nacl
 key .myMacro someParam;
