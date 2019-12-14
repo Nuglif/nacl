@@ -555,7 +555,7 @@ class Parser
                     break;
                 case '%':
                     $this->nextToken();
-                    $value = new OperationNode($value, $this->parseMathExpr(), OperationNode::MOD);
+                    $value = new OperationNode($value, $this->parseMathFactor(), OperationNode::MOD);
                     break;
                 case '/':
                     $this->nextToken();
