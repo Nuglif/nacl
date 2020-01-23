@@ -19,7 +19,7 @@ Table of content
   * [_NACL_ Example Source for the Impatient](#nacl-example-source-for-the-impatient)
   * [_NACL_ Extensions to the _JSON_ Syntax](#nacl-extensions-to-the-json-syntax)
     + [The types](#the-types)
-    + [The Implicit Root Object](#the-implicit-root-object)
+    + [The Root Object](#the-root-object)
     + [The Unquoted Strings](#the-unquoted-strings)
     + [The Multiline Strings](#the-multiline-strings)
     + [The Optional Values Assignments Symbol](#the-optional-values-assignments-symbol)
@@ -39,6 +39,8 @@ Table of content
   * [Installation](#installation)
   * [Usage](#usage)
       - [Extending NACL With Your Own Macros](#extending-nacl-with-your-own-macros)
+- [Authors](#authors)
+- [License](#license)
 
 ##  _NACL_ Example Source for the Impatient
 
