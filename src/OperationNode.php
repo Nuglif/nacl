@@ -38,6 +38,16 @@ class OperationNode extends Node
         $this->operand = $operand;
     }
 
+    public function setParent(Node $parent)
+    {
+        if ($this->left instanceof Node) {
+            $this->left->setParent($parent);
+        }
+        if ($this->right instanceof Node) {
+            $this->right->setParent($parent);
+        }
+    }
+
     public function getNativeValue()
     {
         $left  = $this->left instanceof Node ? $this->left->getNativeValue() : $this->left;
