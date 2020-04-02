@@ -23,12 +23,14 @@ class ReferenceNode extends Node
     private $file;
     private $line;
     private $value;
+    private $options;
 
-    public function __construct($path, $file, $line)
+    public function __construct($path, $file, $line, ObjectNode $options)
     {
         $this->path = $path;
         $this->file = $file;
         $this->line = $line;
+        $this->options = $options;
     }
 
     public function getNativeValue()
@@ -65,7 +67,12 @@ class ReferenceNode extends Node
                     break;
                 default:
                     if (!isset($value[$path])) {
-                        throw new ReferenceException(sprintf('Undefined property: %s.', $this->path), $this->file, $this->line);
+                        if ($this->options->has('default')) {
+                            $value = $this->options['default'];
+                            break 2;
+                        } else {
+                            throw new ReferenceException(sprintf('Undefined property: %s.', $this->path), $this->file, $this->line);
+                        }
                     }
                     $value = $value[$path];
             }

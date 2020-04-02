@@ -7,5 +7,6 @@
             "root": "bar",
             "parent": "bar"
         }
-   }
+   },
+   "bro": "bar"
 }

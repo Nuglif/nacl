@@ -68,6 +68,11 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         return $this->value[$offset];
     }
 
+    public function has($offset)
+    {
+        return array_key_exists($offset, $this->value);
+    }
+
     public function offsetExists($offset)
     {
         return isset($this->value[$offset]);

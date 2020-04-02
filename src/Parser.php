@@ -360,7 +360,7 @@ class Parser
                 $result = $this->doInclude($param, $options);
                 break;
             case 'ref':
-                $result = new ReferenceNode($param, $this->lexer->getFilename(), $this->lexer->getLine());
+                $result = new ReferenceNode($param, $this->lexer->getFilename(), $this->lexer->getLine(), $options);
                 break;
             case 'file':
                 $result = $this->doIncludeFileContent($param, $options);

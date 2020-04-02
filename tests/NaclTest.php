@@ -207,6 +207,16 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
+    public function refWithUnexistingStringAndDefaultValue()
+    {
+        $result = Nacl::parse('foo .ref (default: bar) "/app/foo"');
+
+        $this->assertSame([ 'foo' => 'bar' ], $result);
+    }
+
+    /**
+     * @test
+     */
     public function circularDependencyDetection()
     {
         $this->expectException(ReferenceException::class);
