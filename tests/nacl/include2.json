@@ -1,0 +1,10 @@
+{
+  "key1": "val",
+  "key2": "val",
+  "key3": "val",
+  "key4": "val",
+  "array": [],
+  "include_with_file": {
+    "f": "testcontent"
+  }
+}

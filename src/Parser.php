@@ -394,6 +394,7 @@ class Parser
     {
         $includeValue = new ObjectNode;
 
+        $fileName = $fileName instanceof Node ? $fileName->getNativeValue() : $fileName;
         if (isset($options['glob']) ? $options['glob'] : false) {
             $files = $this->glob($fileName);
         } else {
