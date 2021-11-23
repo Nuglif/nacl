@@ -25,6 +25,7 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->value);
@@ -49,11 +50,13 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->value);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         if ($value instanceof Node) {
@@ -63,6 +66,7 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         $this->value[$offset] = $value;
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->value[$offset];
@@ -73,11 +77,13 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         return array_key_exists($offset, $this->value);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->value[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->value[$offset]);

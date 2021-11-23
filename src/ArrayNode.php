@@ -33,11 +33,13 @@ class ArrayNode extends Node implements \IteratorAggregate, \Countable
         $this->value[] = $item;
     }
 
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->value);
     }
 
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new \ArrayIterator($this->value);
