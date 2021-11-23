@@ -522,7 +522,7 @@ To install with composer:
 composer require nuglif/nacl
 ```
 
-The library will work on versions of PHP from 5.6 to 7.0 or newer.
+The library will work on versions of PHP from 7.1 to 8.0 or newer.
 
 ## Usage
 

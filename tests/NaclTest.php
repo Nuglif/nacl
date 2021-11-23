@@ -6,7 +6,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 {
     private $parser;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         define('TEST_CONST', 'value');
         putenv('TEST=valid');

@@ -6,7 +6,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
 {
     private $macro;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->macro = new Env;
     }
