@@ -11,6 +11,8 @@
  * @author    Charle Demers <charle.demers@gmail.com>
  */
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 interface MacroInterface

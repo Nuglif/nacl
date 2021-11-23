@@ -11,6 +11,8 @@
  * @author    Charle Demers <charle.demers@gmail.com>
  */
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 class Parser
@@ -150,7 +152,7 @@ class Parser
      */
     private function parseInnerObject(ObjectNode $object = null)
     {
-        $object = $object ?: new ObjectNode;
+        $object = $object ?: new ObjectNode();
         do {
             $name     = null;
             $continue = false;
@@ -204,7 +206,7 @@ class Parser
      */
     private function parseArray()
     {
-        $array = new ArrayNode;
+        $array = new ArrayNode();
         $this->consume('[');
 
         $continue = true;
@@ -350,7 +352,7 @@ class Parser
             $options = $this->parseInnerObject();
             $this->consume(')');
         } else {
-            $options = new ObjectNode;
+            $options = new ObjectNode();
         }
 
         $param = $this->parseValue();
@@ -392,7 +394,7 @@ class Parser
 
     private function doInclude($fileName, $options)
     {
-        $includeValue = new ObjectNode;
+        $includeValue = new ObjectNode();
 
         $fileName = $fileName instanceof Node ? $fileName->getNativeValue() : $fileName;
         if (isset($options['glob']) ? $options['glob'] : false) {

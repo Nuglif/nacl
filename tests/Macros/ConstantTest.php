@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl\Macros;
 
 class ConstantTest extends \PHPUnit\Framework\TestCase
@@ -10,7 +12,7 @@ class ConstantTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        $this->macro = new Constant;
+        $this->macro = new Constant();
     }
 
     /**

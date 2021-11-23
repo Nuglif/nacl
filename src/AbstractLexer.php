@@ -11,6 +11,8 @@
  * @author    Charle Demers <charle.demers@gmail.com>
  */
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 abstract class AbstractLexer
@@ -111,12 +113,12 @@ abstract class AbstractLexer
             return false;
         }
 
-        list(
+        [
             $this->line,
             $this->content,
             $this->count,
             $this->filename
-        ) = array_pop($this->stack);
+        ] = array_pop($this->stack);
 
         return true;
     }

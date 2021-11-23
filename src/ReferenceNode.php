@@ -11,6 +11,8 @@
  * @author    Charle Demers <charle.demers@gmail.com>
  */
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 class ReferenceNode extends Node
@@ -70,9 +72,8 @@ class ReferenceNode extends Node
                         if ($this->options->has('default')) {
                             $value = $this->options['default'];
                             break 2;
-                        } else {
-                            throw new ReferenceException(sprintf('Undefined property: %s.', $this->path), $this->file, $this->line);
                         }
+                        throw new ReferenceException(sprintf('Undefined property: %s.', $this->path), $this->file, $this->line);
                     }
                     $value = $value[$path];
             }

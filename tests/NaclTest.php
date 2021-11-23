@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 class NaclTest extends \PHPUnit\Framework\TestCase

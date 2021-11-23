@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl\Macros;
 
 class EnvTest extends \PHPUnit\Framework\TestCase
@@ -8,7 +10,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        $this->macro = new Env;
+        $this->macro = new Env();
     }
 
     /**

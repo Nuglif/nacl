@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 class DumperTest extends \PHPUnit\Framework\TestCase

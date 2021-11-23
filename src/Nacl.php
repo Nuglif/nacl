@@ -11,6 +11,8 @@
  * @author    Charle Demers <charle.demers@gmail.com>
  */
 
+declare(strict_types=1);
+
 namespace Nuglif\Nacl;
 
 class Nacl
@@ -24,9 +26,9 @@ class Nacl
 
     public static function createParser()
     {
-        $parser = new Parser;
-        $parser->registerMacro(new Macros\Env);
-        $parser->registerMacro(new Macros\Constant);
+        $parser = new Parser();
+        $parser->registerMacro(new Macros\Env());
+        $parser->registerMacro(new Macros\Constant());
 
         foreach (self::$macros as $macro) {
             $parser->registerMacro($macro);
