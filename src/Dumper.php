@@ -159,7 +159,7 @@ class Dumper
         $str = '[' . $this->eol();
         ++$this->depth;
         for ($i = 0; $i < $count; ++$i) {
-            $str .= $this->indent() . rtrim($this->dumpVar($var[$i]), $this->separator);
+            $str .= $this->indent() . rtrim((string) $this->dumpVar($var[$i]), $this->separator);
             if ($count - 1 !== $i) {
                 $str .= $this->listSeparator;
             }
