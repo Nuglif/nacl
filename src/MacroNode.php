@@ -59,4 +59,11 @@ class MacroNode extends Node
         );
         $this->isResolved = true;
     }
+
+    public function setParent(Node $parent)
+    {
+        if ($this->param instanceof Node) {
+            $this->param->setParent($parent);
+        }
+    }
 }
