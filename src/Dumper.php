@@ -134,7 +134,7 @@ class Dumper
             );
 
             $str .= ($inline ? '' : $this->indent())
-                . $this->dumpString($key)
+                . $this->dumpString((string) $key)
                 . $this->assign
                 . $this->dumpVar($value)
                 . ($requireSep ? $this->separator : '')
