@@ -389,7 +389,7 @@ class Parser
             return $options['default'];
         }
 
-        $this->error("Unable to read file '${fileName}'");
+        $this->error("Unable to read file '{$fileName}'");
     }
 
     private function doInclude($fileName, $options)
