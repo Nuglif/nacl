@@ -17,15 +17,7 @@ namespace Nuglif\Nacl;
 
 interface MacroInterface
 {
-    /**
-     * @return string
-     */
-    public function getName();
+    public function getName(): string;
 
-    /**
-     * @param mixed $parameter;
-     * @param array $options
-     * @return mixed
-     */
-    public function execute($parameter, array $options = []);
+    public function execute(mixed $parameter, array $options = []): mixed;
 }

@@ -20,12 +20,12 @@ use Nuglif\Nacl\TypeCaster;
 
 class Env implements MacroInterface
 {
-    public function getName()
+    public function getName(): string
     {
         return 'env';
     }
 
-    public function execute($parameter, array $options = [])
+    public function execute(mixed $parameter, array $options = []): mixed
     {
         $options = array_merge([
             'type' => 'string',
@@ -40,7 +40,7 @@ class Env implements MacroInterface
         return $this->cast($val, $options['type']);
     }
 
-    private function cast($value, $type)
+    private function cast(mixed $value, string $type): bool|string|int|float
     {
         switch ($type) {
             case 'bool':

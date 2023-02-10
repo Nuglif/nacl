@@ -19,12 +19,12 @@ class Nacl
 {
     private static $macros = [];
 
-    public static function registerMacro(MacroInterface $macro)
+    public static function registerMacro(MacroInterface $macro): void
     {
         self::$macros[] = $macro;
     }
 
-    public static function createParser()
+    public static function createParser(): Parser
     {
         $parser = new Parser();
         $parser->registerMacro(new Macros\Env());
@@ -37,17 +37,17 @@ class Nacl
         return $parser;
     }
 
-    public static function parse($str)
+    public static function parse(string $str): mixed
     {
         return self::createParser()->parse($str);
     }
 
-    public static function parseFile($file)
+    public static function parseFile(string $file): mixed
     {
         return self::createParser()->parseFile($file);
     }
 
-    public static function dump($var)
+    public static function dump(mixed $var): mixed
     {
         return (new Dumper(
             Dumper::PRETTY_PRINT | Dumper::SHORT_SINGLE_ELEMENT

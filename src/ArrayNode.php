@@ -17,15 +17,15 @@ namespace Nuglif\Nacl;
 
 class ArrayNode extends Node implements \IteratorAggregate, \Countable
 {
-    private $value;
-    private $isNative = true;
+    private array $value;
+    private bool $isNative = true;
 
     public function __construct(array $defaultValues = [])
     {
         $this->value = $defaultValues;
     }
 
-    public function add($item)
+    public function add(mixed $item): void
     {
         if ($item instanceof Node) {
             $item->setParent($this);
@@ -35,19 +35,17 @@ class ArrayNode extends Node implements \IteratorAggregate, \Countable
         $this->value[] = $item;
     }
 
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->value);
     }
 
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->value);
     }
 
-    public function getNativeValue()
+    public function getNativeValue(): array
     {
         if (!$this->isNative) {
             $this->resolve();
@@ -56,7 +54,7 @@ class ArrayNode extends Node implements \IteratorAggregate, \Countable
         return $this->value;
     }
 
-    private function resolve()
+    private function resolve(): void
     {
         foreach ($this->value as $k => $v) {
             $this->value[$k] = $v instanceof Node ? $v->getNativeValue() : $v;

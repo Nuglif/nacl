@@ -17,22 +17,22 @@ namespace Nuglif\Nacl;
 
 abstract class Node
 {
-    private $parent;
+    private ?Node $parent = null;
 
-    public function setParent(Node $parent)
+    public function setParent(Node $parent): void
     {
         $this->parent = $parent;
     }
 
-    public function getParent()
+    public function getParent(): ?Node
     {
-        return $this->parent ?: null;
+        return $this->parent;
     }
 
-    public function getRoot()
+    public function getRoot(): Node
     {
         return $this->parent ? $this->parent->getRoot() : $this;
     }
 
-    abstract public function getNativeValue();
+    abstract public function getNativeValue(): mixed;
 }

@@ -17,21 +17,21 @@ namespace Nuglif\Nacl;
 
 abstract class AbstractLexer
 {
-    const STATE_INITIAL = 0;
-    const EOF            = '<<EOF>>';
+    protected const EOF           = -1;
+    protected const STATE_INITIAL = 0;
 
-    private $regexes   = [];
-    private $tokenMaps = [];
+    private array $regexes   = [];
+    private array $tokenMaps = [];
 
-    private $state = self::STATE_INITIAL;
-    private $stack = [];
+    private int $state = self::STATE_INITIAL;
+    private array $stack = [];
 
-    protected $line;
-    protected $content;
-    protected $count;
-    protected $filename;
+    protected int $line = 0;
+    protected string $content = '';
+    protected int $count = 0;
+    protected ?string $filename = null;
 
-    abstract protected function getRules();
+    abstract protected function getRules(): array;
 
     public function __construct()
     {
@@ -50,7 +50,7 @@ abstract class AbstractLexer
         }
     }
 
-    public function yylex()
+    public function yylex(): Token
     {
         do {
             if (isset($this->content[$this->count])) {
@@ -75,22 +75,22 @@ abstract class AbstractLexer
         } while ($i);
     }
 
-    protected function error($errorMessage)
+    protected function error(string $errorMessage): void
     {
         throw new LexingException($errorMessage, $this->filename, $this->line);
     }
 
-    protected function begin($state)
+    protected function begin(int $state): void
     {
         $this->state = $state;
     }
 
-    private function computeRegex($patterns)
+    private function computeRegex(array $patterns): string
     {
         return '#\G(' . implode(')|\G(', $patterns) . ')#A';
     }
 
-    public function push($content, $filename = null)
+    public function push(string $content, ?string $filename = null): void
     {
         if (null !== $this->content) {
             $this->stack[] = [
@@ -107,7 +107,7 @@ abstract class AbstractLexer
         $this->filename = $filename;
     }
 
-    public function pop()
+    public function pop(): bool
     {
         if (empty($this->stack)) {
             return false;
@@ -123,12 +123,12 @@ abstract class AbstractLexer
         return true;
     }
 
-    public function getLine()
+    public function getLine(): int
     {
         return $this->line;
     }
 
-    public function getFilename()
+    public function getFilename(): ?string
     {
         return $this->filename;
     }

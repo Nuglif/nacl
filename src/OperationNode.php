@@ -29,18 +29,18 @@ class OperationNode extends Node
     const POW          = '**';
     const CONCAT       = '.';
 
-    private $left;
-    private $right;
-    private $operand;
+    private mixed $left;
+    private mixed $right;
+    private mixed $operand;
 
-    public function __construct($left, $right, $operand)
+    public function __construct(mixed $left, mixed $right, string $operand)
     {
         $this->left    = $left;
         $this->right   = $right;
         $this->operand = $operand;
     }
 
-    public function setParent(Node $parent)
+    public function setParent(Node $parent): void
     {
         if ($this->left instanceof Node) {
             $this->left->setParent($parent);
@@ -50,7 +50,7 @@ class OperationNode extends Node
         }
     }
 
-    public function getNativeValue()
+    public function getNativeValue(): mixed
     {
         $left  = $this->left instanceof Node ? $this->left->getNativeValue() : $this->left;
         $right = $this->right instanceof Node ? $this->right->getNativeValue() : $this->right;

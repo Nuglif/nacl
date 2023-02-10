@@ -17,7 +17,7 @@ namespace Nuglif\Nacl;
 
 class TypeCaster
 {
-    public static function toNum($val)
+    public static function toNum(string $val): float|int
     {
         $f = (float) $val;
         $i = (int) $val;
@@ -71,7 +71,7 @@ class TypeCaster
         return $res;
     }
 
-    public static function toBool($val)
+    public static function toBool(string $val): bool
     {
         $val = strtolower($val);
 

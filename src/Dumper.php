@@ -17,74 +17,56 @@ namespace Nuglif\Nacl;
 
 class Dumper
 {
-    const PRETTY_PRINT               = 1 << 1;
-    const SEPARATOR_AFTER_NON_SCALAR = 1 << 2;
-    const SHORT_SINGLE_ELEMENT       = 1 << 3;
-    const NO_TRAILING_SEPARATOR      = 1 << 4;
-    const ROOT_BRACES                = 1 << 5;
-    const QUOTE_STR                  = 1 << 6;
+    public const PRETTY_PRINT               = 1 << 1;
+    public const SEPARATOR_AFTER_NON_SCALAR = 1 << 2;
+    public const SHORT_SINGLE_ELEMENT       = 1 << 3;
+    public const NO_TRAILING_SEPARATOR      = 1 << 4;
+    public const ROOT_BRACES                = 1 << 5;
+    public const QUOTE_STR                  = 1 << 6;
 
-    /**
-     * @var string
-     */
-    private $indentStr = '  ';
+    private string $indentStr = '  ';
 
-    /**
-     * @var string
-     */
-    private $assign = ' ';
+    private string $assign = ' ';
 
-    /**
-     * @var string
-     */
-    private $separator = ';';
+    private string $separator = ';';
 
-    /**
-     * @var string
-     */
-    private $listSeparator = ',';
+    private string $listSeparator = ',';
 
-    /**
-     * @var int
-     */
-    private $depth = 0;
+    private int $depth = 0;
 
-    /**
-     * @var int
-     */
-    private $options;
+    private int $options;
 
-    public function __construct($options = 0)
+    public function __construct(int $options = 0)
     {
         $this->options = $options;
     }
 
-    public function setIndent($str)
+    public function setIndent(string $str): void
     {
         $this->indentStr = $str;
     }
 
-    public function setAssign($str)
+    public function setAssign(string $str): void
     {
         $this->assign = $str;
     }
 
-    public function setSeparator($str)
+    public function setSeparator(string $str): void
     {
         $this->separator = $str;
     }
 
-    public function setListSeparator($str)
+    public function setListSeparator(string $str): void
     {
         $this->listSeparator = $str;
     }
 
-    public function dump($var)
+    public function dump(mixed $var): string
     {
         return $this->dumpVar($var, !$this->hasOption(self::ROOT_BRACES));
     }
 
-    private function dumpVar($var, $root = false)
+    private function dumpVar(mixed $var, bool $root = false): string
     {
         $varType = gettype($var);
         switch ($varType) {
@@ -101,7 +83,7 @@ class Dumper
         }
     }
 
-    private function dumpArray(array $var, $root = false)
+    private function dumpArray(array $var, bool $root = false): string
     {
         if ($this->isAssociativeArray($var)) {
             return $this->dumpAssociativeArray($var, $root);
@@ -110,7 +92,7 @@ class Dumper
         return $this->dumpIndexedArray($var);
     }
 
-    private function dumpAssociativeArray(array $var, $root = false)
+    private function dumpAssociativeArray(array $var, bool $root = false): string
     {
         $inline = $this->hasOption(self::SHORT_SINGLE_ELEMENT) && (1 === count($var));
         $str    = '';
@@ -149,7 +131,7 @@ class Dumper
         return $str;
     }
 
-    private function dumpIndexedArray(array $var)
+    private function dumpIndexedArray(array $var): string
     {
         $count = count($var);
         if (0 === $count) {
@@ -171,7 +153,7 @@ class Dumper
         return $str;
     }
 
-    private function dumpString($var)
+    private function dumpString(string $var): string
     {
         if (!$this->hasOption(self::QUOTE_STR) && preg_match('#^(' . Lexer::REGEX_NAME . ')$#A', $var)) {
             switch ($var) {
@@ -199,7 +181,7 @@ class Dumper
         ]) . '"';
     }
 
-    private function isAssociativeArray(array $var)
+    private function isAssociativeArray(array $var): bool
     {
         $i = 0;
         foreach (array_keys($var) as $key) {
@@ -211,18 +193,18 @@ class Dumper
         return false;
     }
 
-    private function eol()
+    private function eol(): string
     {
         return $this->hasOption(self::PRETTY_PRINT) ? PHP_EOL : '';
     }
 
-    private function indent()
+    private function indent(): string
     {
         return $this->hasOption(self::PRETTY_PRINT) ? str_repeat($this->indentStr, $this->depth) : '';
     }
 
-    private function hasOption($opt)
+    private function hasOption($opt): bool
     {
-        return $opt & $this->options;
+        return (bool) ($opt & $this->options);
     }
 }

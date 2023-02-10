@@ -17,7 +17,7 @@ namespace Nuglif\Nacl;
 
 class ParsingException extends Exception
 {
-    public function __construct($message, $file, $line)
+    public function __construct(string $message, string $file, int $line)
     {
         parent::__construct($message);
         $this->setContext($file, $line);

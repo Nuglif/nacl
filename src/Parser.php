@@ -17,17 +17,17 @@ namespace Nuglif\Nacl;
 
 class Parser
 {
-    private $lexer;
-    private $token;
-    private $macro     = [];
-    private $variables = [];
+    private Lexer $lexer;
+    private Token $token;
+    private array $macro     = [];
+    private array $variables = [];
 
     public function __construct(Lexer $lexer = null)
     {
         $this->lexer = $lexer ?: new Lexer();
     }
 
-    public function registerMacro(MacroInterface $macro)
+    public function registerMacro(MacroInterface $macro): void
     {
         if (isset($this->macro[$macro->getName()])) {
             throw new Exception('Macro with the same name already registered.');
@@ -36,12 +36,12 @@ class Parser
         $this->macro[$macro->getName()] = [ $macro, 'execute' ];
     }
 
-    public function setVariable($name, $value)
+    public function setVariable(string $name, mixed $value): void
     {
         $this->variables[$name] = $value;
     }
 
-    public function parse($str, $filename = 'nacl string')
+    public function parse(string $str, string $filename = 'nacl string'): mixed
     {
         $result = $this->getAstFromString($str, $filename);
 
@@ -51,7 +51,7 @@ class Parser
     /**
      * Nacl ::= RootValue | InnerObject
      */
-    private function getAstFromString($str, $filename)
+    private function getAstFromString(string $str, ?string $filename): mixed
     {
         $this->lexer->push($str, $filename);
         $this->nextToken();
@@ -78,7 +78,7 @@ class Parser
         return $result;
     }
 
-    public function parseFile($file)
+    public function parseFile(string $file): mixed
     {
         $filename = realpath($file);
         if (!$filename) {
@@ -97,7 +97,7 @@ class Parser
      * VariableAssignationList ::= VariableAssignation [ Separator [ VariableAssignationList ] ]
      * VariableAssignation     ::= T_VAR OptionalAssignementOperator Value
      */
-    private function parseRootValue($required = true, &$found = true)
+    private function parseRootValue(bool $required = true, ?bool &$found = true): mixed
     {
         $value = null;
 
@@ -136,7 +136,7 @@ class Parser
     /**
      * Object ::= "{" InnerObject "}"
      */
-    private function parseObject()
+    private function parseObject(): ObjectNode
     {
         $this->consume('{');
         $object = $this->parseInnerObject();
@@ -150,7 +150,7 @@ class Parser
      * KeyValueList ::= VariableAssignation|KeyValue [ Separator [ KeyValueList ] ]
      * KeyValue     ::= ( ( T_END_STR | T_NAME ) OptionalAssignementOperator Value ) | MacroCall
      */
-    private function parseInnerObject(ObjectNode $object = null)
+    private function parseInnerObject(ObjectNode $object = null): ObjectNode
     {
         $object = $object ?: new ObjectNode();
         do {
@@ -204,7 +204,7 @@ class Parser
      * Array     ::= "[" [ ValueList ] "]"
      * ValueList ::= Value [ Separator [ ValueList ] ]
      */
-    private function parseArray()
+    private function parseArray(): ArrayNode
     {
         $array = new ArrayNode();
         $this->consume('[');
@@ -223,7 +223,7 @@ class Parser
     /**
      * Value ::= {T_END_STR | T_NAME }* ( String | Scalar | MathExpr | Variable | Object | Array | MacroCall )
      */
-    private function parseValue($required = true, &$found = true)
+    private function parseValue(bool $required = true, ?bool &$found = true): mixed
     {
         $value = null;
         $found = true;
@@ -267,7 +267,7 @@ class Parser
                 } else {
                     $found = false;
 
-                    return;
+                    return null;
                 }
         }
 
@@ -277,7 +277,7 @@ class Parser
     /**
      * Scalar ::= T_END_STR | T_NAME | T_BOOL | T_NUM | T_NULL
      */
-    private function parseScalar()
+    private function parseScalar(): null|bool|int|float|string
     {
         $value = $this->token->value;
         $this->nextToken();
@@ -288,7 +288,7 @@ class Parser
     /**
      * String ::= { T_ENCAPSED_VAR | T_STRING }* T_END_STR
      */
-    private function parseString()
+    private function parseString(): string|OperationNode
     {
         $value    = '';
         $continue = true;
@@ -315,7 +315,7 @@ class Parser
     /**
      * Variable ::= T_VAR
      */
-    public function getVariable($name)
+    public function getVariable(string $name): mixed
     {
         switch ($name) {
             case '__FILE__':
@@ -336,7 +336,7 @@ class Parser
     /**
      * MacroCall ::= "." T_NAME [ "(" InnerObject ")" ] Value
      */
-    private function parseMacro()
+    private function parseMacro(): mixed
     {
         $this->consume('.');
         $result = null;
@@ -378,7 +378,7 @@ class Parser
         return $result;
     }
 
-    private function doIncludeFileContent($fileName, $options)
+    private function doIncludeFileContent(string $fileName, ObjectNode $options): mixed
     {
         if ($realpath = $this->resolvePath($fileName)) {
             return file_get_contents($realpath);
@@ -392,7 +392,7 @@ class Parser
         $this->error("Unable to read file '{$fileName}'");
     }
 
-    private function doInclude($fileName, $options)
+    private function doInclude(Node|string $fileName, ObjectNode $options): mixed
     {
         $includeValue = new ObjectNode();
 
@@ -431,21 +431,21 @@ class Parser
         return $includeValue;
     }
 
-    public function resolvePath($file)
+    public function resolvePath(string $file): string|false
     {
         return $this->relativeToCurrentFile(function () use ($file) {
             return realpath($file);
         });
     }
 
-    private function glob($pattern)
+    private function glob(string $pattern): array
     {
         return $this->relativeToCurrentFile(function () use ($pattern) {
             return array_map('realpath', glob($pattern) ?: []);
         });
     }
 
-    private function relativeToCurrentFile(callable $cb)
+    private function relativeToCurrentFile(callable $cb): mixed
     {
         $cwd = getcwd();
         if (file_exists($this->lexer->getFilename())) {
@@ -460,7 +460,7 @@ class Parser
     /**
      * MathExpr ::= OrOperand { "|" OrOperand }*
      */
-    private function parseMathExpr()
+    private function parseMathExpr(): mixed
     {
         $value = $this->parseOrOperand();
 
@@ -474,7 +474,7 @@ class Parser
     /**
      * OrOperand ::= AndOperand { "&" AndOperand }*
      */
-    private function parseOrOperand()
+    private function parseOrOperand(): mixed
     {
         $value = $this->parseAndOperand();
 
@@ -488,7 +488,7 @@ class Parser
     /**
      * AndOperand ::= ShiftOperand { ( "<<" | ">>" ) ShiftOperand }*
      */
-    private function parseAndOperand()
+    private function parseAndOperand(): mixed
     {
         $value = $this->parseShiftOperand();
 
@@ -514,7 +514,7 @@ class Parser
     /**
      * ShiftOperand ::= MathTerm { ( "+" | "-" ) MathTerm }*
      */
-    private function parseShiftOperand()
+    private function parseShiftOperand(): mixed
     {
         $value = $this->parseMathTerm();
 
@@ -540,7 +540,7 @@ class Parser
     /**
      * MathTerm ::= MathFactor { ( ( "*" | "%" | "/" ) MathFactor ) | ( "(" MathExpr ")" ) }*
      */
-    private function parseMathTerm()
+    private function parseMathTerm(): mixed
     {
         $value = $this->parseMathFactor();
 
@@ -575,7 +575,7 @@ class Parser
     /**
      * MathFactor ::= (( "(" MathExpr ")" ) | T_NUM | T_VAR | ( ("+"|"-") MathTerm )) [ "^" MathFactor ]
      */
-    private function parseMathFactor()
+    private function parseMathFactor(): mixed
     {
         $value = null;
         switch ($this->token->type) {
@@ -611,7 +611,7 @@ class Parser
         return $value;
     }
 
-    private function consume($type)
+    private function consume(int|string $type): void
     {
         if ($type !== $this->token->type) {
             $this->syntaxError();
@@ -623,7 +623,7 @@ class Parser
     /**
      * Separator ::= [ ";" | "," ]
      */
-    private function consumeOptionalSeparator()
+    private function consumeOptionalSeparator(): bool
     {
         if (',' !== $this->token->type && ';' !== $this->token->type) {
             return false;
@@ -637,7 +637,7 @@ class Parser
     /**
      * OptionalAssignementOperator ::= [ ":" | "=" ]
      */
-    private function consumeOptionalAssignementOperator()
+    private function consumeOptionalAssignementOperator(): bool
     {
         if (':' !== $this->token->type && '=' !== $this->token->type) {
             return false;
@@ -648,7 +648,7 @@ class Parser
         return true;
     }
 
-    private function consumeOptional($type)
+    private function consumeOptional(int|string $type): bool
     {
         if ($type !== $this->token->type) {
             return false;
@@ -659,12 +659,12 @@ class Parser
         return true;
     }
 
-    private function nextToken()
+    private function nextToken(): void
     {
         $this->token = $this->lexer->yylex();
     }
 
-    private function syntaxError()
+    private function syntaxError(): void
     {
         $literal = Token::getLiteral($this->token->type);
         $value   = (strlen((string) $this->token->value) > 10) ? substr($this->token->value, 0, 10) . '...' : $this->token->value;
@@ -676,7 +676,7 @@ class Parser
         $this->error($message);
     }
 
-    public function error($message)
+    public function error(string $message): void
     {
         throw new ParsingException($message, $this->lexer->getFilename(), $this->lexer->getLine());
     }

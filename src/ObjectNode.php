@@ -17,8 +17,8 @@ namespace Nuglif\Nacl;
 
 class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-    private $value    = [];
-    private $isNative = true;
+    private array $value    = [];
+    private bool $isNative = true;
 
     public function __construct(array $values = [])
     {
@@ -27,13 +27,12 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         }
     }
 
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->value);
     }
 
-    public function merge(ObjectNode $a2)
+    public function merge(ObjectNode $a2): ObjectNode
     {
         if (0 === count($this)) {
             return $a2;
@@ -52,14 +51,12 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         return $this;
     }
 
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         return new \ArrayIterator($this->value);
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($value instanceof Node) {
             $value->setParent($this);
@@ -68,30 +65,27 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         $this->value[$offset] = $value;
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->value[$offset];
     }
 
-    public function has($offset)
+    public function has(mixed $offset): bool
     {
         return array_key_exists($offset, $this->value);
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->value[$offset]);
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->value[$offset]);
     }
 
-    public function getNativeValue()
+    public function getNativeValue(): array
     {
         if (!$this->isNative) {
             $this->resolve();
@@ -100,7 +94,7 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
         return $this->value;
     }
 
-    private function resolve()
+    private function resolve(): void
     {
         foreach ($this->value as $k => $v) {
             $this->value[$k] = $v instanceof Node ? $v->getNativeValue() : $v;

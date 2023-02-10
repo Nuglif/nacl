@@ -19,21 +19,21 @@ use Nuglif\Nacl\MacroInterface;
 
 class Callback implements MacroInterface
 {
-    private $name;
+    private string $name;
     private $callback;
 
-    public function __construct($name, callable $callback)
+    public function __construct(string $name, callable $callback)
     {
         $this->name     = $name;
         $this->callback = $callback;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function execute($parameter, array $options = [])
+    public function execute(mixed $parameter, array $options = []): mixed
     {
         $callback = $this->callback;
 

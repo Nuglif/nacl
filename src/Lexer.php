@@ -17,9 +17,8 @@ namespace Nuglif\Nacl;
 
 class Lexer extends AbstractLexer
 {
-    const STATE_INITIAL  = 0;
-    const STATE_INSTRING  = 1;
-    const STATE_INHEREDOC = 2;
+    protected const STATE_INSTRING  = 1;
+    protected const STATE_INHEREDOC = 2;
 
     const REGEX_SPACE      = '[ \t\n\r]+';
     const REGEX_COMMENT    = '(?://|\#).*';
@@ -34,14 +33,9 @@ class Lexer extends AbstractLexer
     const REGEX_TOKEN      = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
     const REGEX_ANY        = '.';
 
-    private $textBuffer;
+    private string $textBuffer;
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    protected function getRules()
+    protected function getRules(): array
     {
         return [
             self::STATE_INITIAL => [
@@ -171,7 +165,7 @@ class Lexer extends AbstractLexer
         ];
     }
 
-    private function fromCharCode($bytes)
+    private function fromCharCode(int $bytes): string
     {
         switch (true) {
             case (0x7F & $bytes) == $bytes:

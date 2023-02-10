@@ -19,15 +19,15 @@ class ReferenceNode extends Node
 {
     const ROOT = '/';
 
-    private $path;
-    private $isResolving = false;
-    private $isResolved  = false;
-    private $file;
-    private $line;
-    private $value;
-    private $options;
+    private mixed $path;
+    private bool $isResolving = false;
+    private bool $isResolved  = false;
+    private string $file;
+    private int $line;
+    private mixed $value = null;
+    private ObjectNode $options;
 
-    public function __construct($path, $file, $line, ObjectNode $options)
+    public function __construct(string|Node $path, string $file, int $line, ObjectNode $options)
     {
         $this->path = $path;
         $this->file = $file;
@@ -35,7 +35,7 @@ class ReferenceNode extends Node
         $this->options = $options;
     }
 
-    public function getNativeValue()
+    public function getNativeValue(): mixed
     {
         if (!$this->isResolved) {
             $this->resolve();

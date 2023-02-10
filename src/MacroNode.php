@@ -18,19 +18,19 @@ namespace Nuglif\Nacl;
 class MacroNode extends Node
 {
     private $callback;
-    private $param;
-    private $options;
-    private $value;
-    private $isResolved = false;
+    private mixed $param;
+    private ObjectNode $options;
+    private mixed $value;
+    private bool $isResolved = false;
 
-    public function __construct(callable $callback, $param, ObjectNode $options)
+    public function __construct(callable $callback, mixed $param, ObjectNode $options)
     {
         $this->callback = $callback;
         $this->param    = $param;
         $this->options  = $options;
     }
 
-    public function execute()
+    public function execute(): mixed
     {
         $result = $this->getNativeValue();
 
@@ -41,7 +41,7 @@ class MacroNode extends Node
         return $result;
     }
 
-    public function getNativeValue()
+    public function getNativeValue(): mixed
     {
         if (!$this->isResolved) {
             $this->resolve();
@@ -50,7 +50,7 @@ class MacroNode extends Node
         return $this->value;
     }
 
-    private function resolve()
+    private function resolve(): void
     {
         $callback    = $this->callback;
         $this->value = $callback(
@@ -60,7 +60,7 @@ class MacroNode extends Node
         $this->isResolved = true;
     }
 
-    public function setParent(Node $parent)
+    public function setParent(Node $parent): void
     {
         if ($this->param instanceof Node) {
             $this->param->setParent($parent);

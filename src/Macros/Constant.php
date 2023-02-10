@@ -19,12 +19,12 @@ use Nuglif\Nacl\MacroInterface;
 
 class Constant implements MacroInterface
 {
-    public function getName()
+    public function getName(): string
     {
         return 'const';
     }
 
-    public function execute($parameter, array $options = [])
+    public function execute(mixed $parameter, array $options = []): mixed
     {
         if (!is_string($parameter)) {
             throw new \InvalidArgumentException('Constant parameter must be a string');
