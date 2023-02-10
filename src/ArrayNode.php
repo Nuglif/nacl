@@ -20,12 +20,14 @@ namespace Nuglif\Nacl;
  */
 class ArrayNode extends Node implements \IteratorAggregate, \Countable
 {
-    private array $value;
+    private array $value = [];
     private bool $isNative = true;
 
     public function __construct(array $defaultValues = [])
     {
-        $this->value = $defaultValues;
+        foreach ($defaultValues as $v) {
+            $this->add($v);
+        }
     }
 
     public function add(mixed $item): void
