@@ -4,12 +4,12 @@ require __DIR__ . '/../vendor/autoload.php';
 
 class Base64DecodeMacro implements \Nuglif\Nacl\MacroInterface
 {
-    public function getName()
+    public function getName(): string
     {
         return 'base64_decode';
     }
 
-    public function execute($param, array $options = [])
+    public function execute(mixed $param, array $options = []): mixed
     {
         return base64_decode($param);
     }
