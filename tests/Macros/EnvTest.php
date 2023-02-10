@@ -6,7 +6,7 @@ namespace Nuglif\Nacl\Macros;
 
 class EnvTest extends \PHPUnit\Framework\TestCase
 {
-    private $macro;
+    private Env $macro;
 
     public function setUp(): void
     {
@@ -16,7 +16,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeReturnTheEnvVarAsIs()
+    public function executeReturnTheEnvVarAsIs(): void
     {
         putenv('FOO=BAR');
         $this->assertSame('BAR', $this->macro->execute('FOO', []));
@@ -25,7 +25,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeReturnFalseIfEnvVarIsNotset()
+    public function executeReturnFalseIfEnvVarIsNotset(): void
     {
         $this->assertFalse($this->macro->execute('NOT_SET'));
     }
@@ -33,7 +33,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeReturnDefaultWhenEnvVarIsNotSetAndDefaultIsSet()
+    public function executeReturnDefaultWhenEnvVarIsNotSetAndDefaultIsSet(): void
     {
         $this->assertSame('FOO', $this->macro->execute('NOT_SET', [ 'default' => 'FOO' ]));
         $this->assertSame(null, $this->macro->execute('NOT_SET', [ 'default' => null ]));
@@ -42,7 +42,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeWillForceNumTypeIfDefined()
+    public function executeWillForceNumTypeIfDefined(): void
     {
         putenv('FOO=10.1');
         $this->assertSame(10.1, $this->macro->execute('FOO', [ 'type' => 'num' ]));
@@ -52,7 +52,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeWillForceBoolTypeIfDefined()
+    public function executeWillForceBoolTypeIfDefined(): void
     {
         putenv('FOO=true');
         $this->assertTrue($this->macro->execute('FOO', [ 'type' => 'bool' ]));
@@ -62,7 +62,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeWillForceIntTypeIfDefined()
+    public function executeWillForceIntTypeIfDefined(): void
     {
         putenv('FOO=10.1');
         $this->assertSame(10, $this->macro->execute('FOO', [ 'type' => 'int' ]));
@@ -72,7 +72,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeWillThrowInvalidArgumentExceptionIfTypeIsUnknown()
+    public function executeWillThrowInvalidArgumentExceptionIfTypeIsUnknown(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         putenv('FOO=foo');

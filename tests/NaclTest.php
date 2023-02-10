@@ -6,7 +6,7 @@ namespace Nuglif\Nacl;
 
 class NaclTest extends \PHPUnit\Framework\TestCase
 {
-    private $parser;
+    private Parser $parser;
 
     public static function setUpBeforeClass(): void
     {
@@ -14,7 +14,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         putenv('TEST=valid');
     }
 
-    public static function getJsonFiles()
+    public static function getJsonFiles(): iterable
     {
         $files = glob(__DIR__ . '/json/*.json');
 
@@ -27,7 +27,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      * @dataProvider getJsonFiles
      * @test
      */
-    public function naclIsJsonCompatible($jsonFile)
+    public function naclIsJsonCompatible(string $jsonFile): void
     {
         $this->assertSame(
             json_decode(file_get_contents($jsonFile), true),
@@ -35,7 +35,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public static function getNaclFiles()
+    public static function getNaclFiles(): iterable
     {
         $files = glob(__DIR__ . '/nacl/*.conf');
 
@@ -50,7 +50,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      * @dataProvider getNaclFiles
      * @test
      */
-    public function testNacl($naclFile, $jsonFile)
+    public function testNacl(string $naclFile, string $jsonFile): void
     {
         $this->parser = Nacl::createParser();
 
@@ -86,7 +86,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testUnterminatedString()
+    public function testUnterminatedString(): void
     {
         $this->expectException(LexingException::class);
         $this->expectExceptionMessage('Unterminated string');
@@ -97,7 +97,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testUnterminatedHeredoc()
+    public function testUnterminatedHeredoc(): void
     {
         $this->expectException(LexingException::class);
         $this->expectExceptionMessage('Unterminated HEREDOC');
@@ -108,7 +108,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testUnterminatedMultilineComment()
+    public function testUnterminatedMultilineComment(): void
     {
         $this->expectException(LexingException::class);
         $this->expectExceptionMessage('Unterminated multiline comment');
@@ -119,7 +119,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testParseErrorMessageWithTokenName()
+    public function testParseErrorMessageWithTokenName(): void
     {
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Syntax error, unexpected \'10\' (T_NUM)');
@@ -130,7 +130,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testParseErrorMesageWithoutTokenName()
+    public function testParseErrorMesageWithoutTokenName(): void
     {
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Syntax error, unexpected \';\'');
@@ -141,7 +141,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function parsingUnexistingFileThrowInvalidArgumentException()
+    public function parsingUnexistingFileThrowInvalidArgumentException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -151,7 +151,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function scalarValueMacroInsideObjectNodeThrowParsingException()
+    public function scalarValueMacroInsideObjectNodeThrowParsingException(): void
     {
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Macro without assignation key must return an object');
@@ -162,7 +162,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function contentAfterScalarRootValueThrowsParsingExcpetion()
+    public function contentAfterScalarRootValueThrowsParsingExcpetion(): void
     {
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Syntax error, unexpected \'foo\' (T_NAME)');
@@ -173,7 +173,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testRegisterMacro()
+    public function testRegisterMacro(): void
     {
         Nacl::registerMacro($macro = new Macros\Callback('strtoupper', function ($p) {
             return strtoupper($p);
@@ -185,7 +185,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function testLazyMacroExecution()
+    public function testLazyMacroExecution(): void
     {
         $this->parser = Nacl::createParser();
         $this->parser->registerMacro($macro = new Macros\Callback('error', function ($p) {
@@ -198,7 +198,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function refWithoutString()
+    public function refWithoutString(): void
     {
         $this->expectException(ReferenceException::class);
         $this->expectExceptionMessage('.ref expects parameter to be string, array given.');
@@ -209,7 +209,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function refWithUnexistingStringAndDefaultValue()
+    public function refWithUnexistingStringAndDefaultValue(): void
     {
         $result = Nacl::parse('foo .ref (default: bar) "/app/foo"');
 
@@ -219,7 +219,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function circularDependencyDetection()
+    public function circularDependencyDetection(): void
     {
         $this->expectException(ReferenceException::class);
         $this->expectExceptionMessage('Circular dependence detected.');
@@ -230,7 +230,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function undefinedRef()
+    public function undefinedRef(): void
     {
         $this->expectException(ReferenceException::class);
         $this->expectExceptionMessage('Undefined property: bar.');
@@ -241,7 +241,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function fileMacroWithUnexistingFile()
+    public function fileMacroWithUnexistingFile(): void
     {
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Unable to read file \'unknown.txt\'');
@@ -251,7 +251,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function fileMacroWithUnexistingFileAndDefaultValue()
+    public function fileMacroWithUnexistingFileAndDefaultValue(): void
     {
         $result = Nacl::parse('foo .file (default: bar) "unknown.txt"');
 

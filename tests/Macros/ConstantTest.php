@@ -6,9 +6,9 @@ namespace Nuglif\Nacl\Macros;
 
 class ConstantTest extends \PHPUnit\Framework\TestCase
 {
-    const FOOBAR = 'foo';
+    public const FOOBAR = 'foo';
 
-    private $macro;
+    private Constant $macro;
 
     public function setUp(): void
     {
@@ -18,7 +18,7 @@ class ConstantTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeReturnConstant()
+    public function executeReturnConstant(): void
     {
         $this->assertSame('foo', $this->macro->execute(self::class . '::FOOBAR', []));
     }
@@ -26,7 +26,7 @@ class ConstantTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeWillReturnDefaultValueIfConstantDoNotExists()
+    public function executeWillReturnDefaultValueIfConstantDoNotExists(): void
     {
         $default = 29303;
         $this->assertSame($default, $this->macro->execute('UNEXISTING_CONST', [ 'default' => $default ]));
@@ -35,7 +35,7 @@ class ConstantTest extends \PHPUnit\Framework\TestCase
     /**
      * @test
      */
-    public function executeWillReturnInvalidArgumentExceptionIfNameIsNotAString()
+    public function executeWillReturnInvalidArgumentExceptionIfNameIsNotAString(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->macro->execute(10);

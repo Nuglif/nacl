@@ -6,7 +6,7 @@ namespace Nuglif\Nacl;
 
 class DumperTest extends \PHPUnit\Framework\TestCase
 {
-    public static function getJsonFiles()
+    public static function getJsonFiles(): iterable
     {
         $files = glob(__DIR__ . '/json/*.json');
 
