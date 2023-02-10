@@ -45,6 +45,7 @@ class Token
             return $names[$type];
         }
 
+        assert(is_string($type));
         return $type;
     }
 }

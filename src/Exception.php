@@ -17,7 +17,7 @@ namespace Nuglif\Nacl;
 
 class Exception extends \Exception
 {
-    public function setContext(string $file, int $line)
+    public function setContext(string $file, int $line): void
     {
         $this->file = $file;
         $this->line = $line;

@@ -50,34 +50,26 @@ class OperationNode extends Node
         }
     }
 
+    /**
+     * @psalm-suppress UnhandledMatchCondition
+     */
     public function getNativeValue(): mixed
     {
         $left  = $this->left instanceof Node ? $this->left->getNativeValue() : $this->left;
         $right = $this->right instanceof Node ? $this->right->getNativeValue() : $this->right;
 
-        switch ($this->operand) {
-            case self::ADD:
-                return $left + $right;
-            case self::OR_OPERATOR:
-                return $left | $right;
-            case self::AND_OPERATOR:
-                return $left & $right;
-            case self::SHIFT_LEFT:
-                return $left << $right;
-            case self::SHIFT_RIGHT:
-                return $left >> $right;
-            case self::SUB:
-                return $left - $right;
-            case self::MUL:
-                return $left * $right;
-            case self::DIV:
-                return $left / $right;
-            case self::MOD:
-                return $left % $right;
-            case self::POW:
-                return $left ** $right;
-            case self::CONCAT:
-                return $left . $right;
-        }
+        return match ($this->operand) {
+            self::ADD => $left + $right,
+            self::OR_OPERATOR => $left | $right,
+            self::AND_OPERATOR => $left & $right,
+            self::SHIFT_LEFT => $left << $right,
+            self::SHIFT_RIGHT => $left >> $right,
+            self::SUB => $left - $right,
+            self::MUL => $left * $right,
+            self::DIV => $left / $right,
+            self::MOD => $left % $right,
+            self::POW => $left ** $right,
+            self::CONCAT => $left . $right,
+        };
     }
 }

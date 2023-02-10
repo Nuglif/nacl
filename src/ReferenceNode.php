@@ -44,7 +44,7 @@ class ReferenceNode extends Node
         return $this->value;
     }
 
-    private function resolve()
+    private function resolve(): void
     {
         if ($this->isResolving) {
             throw new ReferenceException('Circular dependence detected.', $this->file, $this->line);
@@ -65,9 +65,10 @@ class ReferenceNode extends Node
                 case '':
                     break;
                 case '..':
-                    $value = $value->getParent();
+                    $value = $value?->getParent();
                     break;
                 default:
+                    /** @psalm-suppress PossiblyUndefinedMethod */
                     if (!isset($value[$path])) {
                         if ($this->options->has('default')) {
                             $value = $this->options['default'];
@@ -88,7 +89,7 @@ class ReferenceNode extends Node
         $this->value       = $value;
     }
 
-    private function isAbsolute()
+    private function isAbsolute(): bool
     {
         return self::ROOT === substr($this->path, 0, 1);
     }

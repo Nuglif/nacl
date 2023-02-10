@@ -40,7 +40,7 @@ class Env implements MacroInterface
         return $this->cast($val, $options['type']);
     }
 
-    private function cast(mixed $value, string $type): bool|string|int|float
+    private function cast(string $value, string $type): bool|string|int|float
     {
         return match ($type) {
             'bool', 'boolean' => TypeCaster::toBool($value),

@@ -69,18 +69,12 @@ class Dumper
     private function dumpVar(mixed $var, bool $root = false): string
     {
         $varType = gettype($var);
-        switch ($varType) {
-            case 'array':
-                return $this->dumpArray($var, $root);
-            case 'string':
-                return $this->dumpString($var);
-            case 'integer':
-            case 'double':
-            case 'boolean':
-                return var_export($var, true);
-            case 'NULL':
-                return 'null';
-        }
+        return match ($varType) {
+            'array' => $this->dumpArray($var, $root),
+            'string' => $this->dumpString($var),
+            'integer', 'double', 'boolean' => var_export($var, true),
+            'NULL' => 'null',
+        };
     }
 
     private function dumpArray(array $var, bool $root = false): string
@@ -141,7 +135,7 @@ class Dumper
         $str = '[' . $this->eol();
         ++$this->depth;
         for ($i = 0; $i < $count; ++$i) {
-            $str .= $this->indent() . rtrim((string) $this->dumpVar($var[$i]), $this->separator);
+            $str .= $this->indent() . rtrim($this->dumpVar($var[$i]), $this->separator);
             if ($count - 1 !== $i) {
                 $str .= $this->listSeparator;
             }
@@ -195,7 +189,7 @@ class Dumper
         return $this->hasOption(self::PRETTY_PRINT) ? str_repeat($this->indentStr, $this->depth) : '';
     }
 
-    private function hasOption($opt): bool
+    private function hasOption(int $opt): bool
     {
         return (bool) ($opt & $this->options);
     }

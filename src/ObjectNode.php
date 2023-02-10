@@ -15,6 +15,10 @@ declare(strict_types=1);
 
 namespace Nuglif\Nacl;
 
+/**
+ * @template-implements \IteratorAggregate<mixed>
+ * @template-implements \ArrayAccess<string, mixed>
+ */
 class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Countable
 {
     private array $value    = [];
@@ -62,6 +66,7 @@ class ObjectNode extends Node implements \IteratorAggregate, \ArrayAccess, \Coun
             $value->setParent($this);
             $this->isNative = false;
         }
+        assert(is_string($offset));
         $this->value[$offset] = $value;
     }
 

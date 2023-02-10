@@ -15,6 +15,9 @@ declare(strict_types=1);
 
 namespace Nuglif\Nacl;
 
+/**
+ * @psalm-suppress PropertyNotSetInConstructor
+ */
 class Parser
 {
     private Lexer $lexer;
@@ -158,6 +161,7 @@ class Parser
             $continue = false;
             switch ($this->token->type) {
                 case Token::T_END_STR:
+                    /** @psalm-suppress PossiblyInvalidMethodCall */
                     $name = $this->parseString()->getNativeValue();
                     /* no break */
                 case Token::T_NAME:
@@ -238,7 +242,7 @@ class Parser
                 $required  = $this->consumeOptionalAssignementOperator();
                 $realValue = $this->parseValue($required, $valueIsKey);
                 if ($valueIsKey) {
-                    return new ObjectNode([ $value => $realValue ]);
+                    return new ObjectNode([ (string) $value => $realValue ]);
                 }
                 break;
             case Token::T_BOOL:
@@ -371,6 +375,7 @@ class Parser
                 if (!isset($this->macro[$name])) {
                     $this->error('Unknown macro \'' . $name . '\'');
                 }
+                assert(is_string($name));
                 $result = new MacroNode($this->macro[$name], $param, $options);
                 break;
         }
@@ -378,6 +383,9 @@ class Parser
         return $result;
     }
 
+    /**
+     * @psalm-suppress InvalidReturnType
+     */
     private function doIncludeFileContent(string $fileName, ObjectNode $options): mixed
     {
         if ($realpath = $this->resolvePath($fileName)) {

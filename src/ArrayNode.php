@@ -15,6 +15,9 @@ declare(strict_types=1);
 
 namespace Nuglif\Nacl;
 
+/**
+ * @template-implements \IteratorAggregate<mixed>
+ */
 class ArrayNode extends Node implements \IteratorAggregate, \Countable
 {
     private array $value;

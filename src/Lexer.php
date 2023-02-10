@@ -33,7 +33,7 @@ class Lexer extends AbstractLexer
     public const REGEX_TOKEN      = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
     public const REGEX_ANY        = '.';
 
-    private string $textBuffer;
+    private string $textBuffer = '';
 
     protected function getRules(): array
     {
@@ -47,30 +47,30 @@ class Lexer extends AbstractLexer
                         $this->line += substr_count(substr($this->content, $this->count), "\n");
                         $this->error('Unterminated multiline comment');
                     }
-                    $this->line += substr_count(substr($this->content, $this->count, $pos - $this->count + 2), "\n");
-                    $this->count = $pos + 2;
+                    $this->line += substr_count(substr($this->content, $this->count, (int) $pos - $this->count + 2), "\n");
+                    $this->count = (int) $pos + 2;
                 },
-                self::REGEX_DQUOTE => function () {
+                self::REGEX_DQUOTE => function (): void {
                     $this->begin(self::STATE_INSTRING);
                     $this->textBuffer = '';
                 },
-                self::REGEX_BOOL => function (&$yylval) {
+                self::REGEX_BOOL => function (mixed &$yylval): int {
                     $yylval = TypeCaster::toBool($yylval);
 
                     return Token::T_BOOL;
                 },
-                self::REGEX_NULL => function (&$yylval) {
+                self::REGEX_NULL => function (mixed &$yylval): int {
                     $yylval = null;
 
                     return Token::T_NULL;
                 },
-                self::REGEX_NUM => function (&$yylval) {
+                self::REGEX_NUM => function (mixed &$yylval): int {
                     $yylval = TypeCaster::toNum($yylval);
 
                     return Token::T_NUM;
                 },
                 self::REGEX_NAME => fn() => Token::T_NAME,
-                self::REGEX_HEREDOC => function (&$yylval) {
+                self::REGEX_HEREDOC => function (mixed &$yylval): int {
                     $needle = "\n" . $yylval;
                     $pos = strpos($this->content, $needle, $this->count);
                     if (false === $pos) {
@@ -78,21 +78,21 @@ class Lexer extends AbstractLexer
                         $this->error('Unterminated HEREDOC');
                     }
 
-                    $yylval = substr($this->content, $this->count, $pos - $this->count);
+                    $yylval = substr($this->content, $this->count, (int) $pos - $this->count);
                     $this->line += substr_count($yylval, "\n") + 1;
                     $this->count += strlen($yylval) + strlen($needle);
 
                     return Token::T_END_STR;
                 },
-                self::REGEX_TOKEN => fn($yylval) => $yylval,
-                self::REGEX_VAR => fn() => Token::T_VAR,
-                self::REGEX_ANY => function ($yylval) {
+                self::REGEX_TOKEN => fn(mixed $yylval): string => $yylval,
+                self::REGEX_VAR => fn(): int => Token::T_VAR,
+                self::REGEX_ANY => function (mixed $yylval): void {
                     $this->error('Unexpected char \'' . $yylval . '\'');
                 },
-                self::EOF => fn() => Token::T_EOF,
+                self::EOF => fn(): int => Token::T_EOF,
             ],
             self::STATE_INSTRING => [
-                '[^\\\"$]+' => function (&$yylval) {
+                '[^\\\"$]+' => function (mixed &$yylval) {
                     $this->textBuffer .= $yylval;
                     if ('$' == substr($this->content, $this->count, 1)) {
                         $yylval = $this->textBuffer;
@@ -101,7 +101,7 @@ class Lexer extends AbstractLexer
                         return Token::T_STRING;
                     }
                 },
-                '?:\\\(.)' => function ($yylval) {
+                '?:\\\(.)' => function (mixed $yylval) {
                     switch ($yylval) {
                         case 'n':
                             $this->textBuffer .= "\n";
@@ -134,7 +134,7 @@ class Lexer extends AbstractLexer
                             break;
                     }
                 },
-                '\$' => function (&$yylval) {
+                '\$' => function (mixed &$yylval) {
                     if (preg_match('/^{([A-Za-z0-9_]+)}/', substr($this->content, $this->count), $matches)) {
                         $this->count += strlen($matches[0]);
                         $yylval = $matches[1];
@@ -144,7 +144,7 @@ class Lexer extends AbstractLexer
 
                     $this->textBuffer .= $yylval;
                 },
-                self::REGEX_DQUOTE => function (&$yylval) {
+                self::REGEX_DQUOTE => function (mixed &$yylval) {
                     $yylval = $this->textBuffer;
                     $this->begin(self::STATE_INITIAL);
 

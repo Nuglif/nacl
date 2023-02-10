@@ -29,7 +29,7 @@ abstract class AbstractLexer
     protected int $line = 0;
     protected string $content = '';
     protected int $count = 0;
-    protected ?string $filename = null;
+    protected string $filename = '';
 
     abstract protected function getRules(): array;
 
@@ -50,6 +50,9 @@ abstract class AbstractLexer
         }
     }
 
+    /**
+     * @psalm-suppress InvalidReturnType
+     */
     public function yylex(): Token
     {
         do {
@@ -92,7 +95,7 @@ abstract class AbstractLexer
 
     public function push(string $content, ?string $filename = null): void
     {
-        if (null !== $this->content) {
+        if ('' !== $this->content) {
             $this->stack[] = [
                 $this->line,
                 $this->content,
@@ -104,7 +107,7 @@ abstract class AbstractLexer
         $this->line     = 1;
         $this->content  = $content;
         $this->count    = 0;
-        $this->filename = $filename;
+        $this->filename = $filename ?: '';
     }
 
     public function pop(): bool
@@ -128,7 +131,7 @@ abstract class AbstractLexer
         return $this->line;
     }
 
-    public function getFilename(): ?string
+    public function getFilename(): string
     {
         return $this->filename;
     }
