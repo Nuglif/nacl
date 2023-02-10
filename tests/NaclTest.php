@@ -18,9 +18,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         $files = glob(__DIR__ . '/json/*.json');
 
-        return array_map(function ($f) {
-            return [$f];
-        }, $files);
+        return array_map(fn($f) => [$f], $files);
     }
 
     /**
@@ -30,7 +28,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     public function naclIsJsonCompatible(string $jsonFile): void
     {
         $this->assertSame(
-            json_decode(file_get_contents($jsonFile), true),
+            json_decode(file_get_contents($jsonFile), true, 512, JSON_THROW_ON_ERROR),
             Nacl::parseFile($jsonFile)
         );
     }
@@ -54,27 +52,21 @@ class NaclTest extends \PHPUnit\Framework\TestCase
     {
         $this->parser = Nacl::createParser();
 
-        $this->parser->registerMacro(new Macros\Callback('testMacroWithOptions', function ($p, $a = []) {
-            return [
-                'param'   => $p,
-                'options' => $a
-            ];
-        }));
+        $this->parser->registerMacro(new Macros\Callback('testMacroWithOptions', fn($p, $a = []) => [
+            'param'   => $p,
+            'options' => $a
+        ]));
 
-        $this->parser->registerMacro(new Macros\Callback('testMacro', function ($p, $a = []) {
-            return $p;
-        }));
+        $this->parser->registerMacro(new Macros\Callback('testMacro', fn($p, $a = []) => $p));
 
-        $this->parser->registerMacro(new Macros\Callback('json_encode', function ($p) {
-            return json_encode($p);
-        }));
+        $this->parser->registerMacro(new Macros\Callback('json_encode', fn($p) => json_encode($p, JSON_THROW_ON_ERROR)));
 
         $this->parser->setVariable('BAR', 'bar');
         $this->parser->setVariable('MY_VAR', 'my var value');
         $result = $this->parser->parseFile($naclFile);
         try {
             $this->assertEquals(
-                file_exists($jsonFile) ? json_decode(file_get_contents($jsonFile), true) : [],
+                file_exists($jsonFile) ? json_decode(file_get_contents($jsonFile), true, 512, JSON_THROW_ON_ERROR) : [],
                 $result
             );
         } catch (\Exception $e) {
@@ -124,7 +116,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Syntax error, unexpected \'10\' (T_NUM)');
 
-        Nacl::parse('foo bar baz {}10;', 'file');
+        Nacl::parse('foo bar baz {}10;');
     }
 
     /**
@@ -135,7 +127,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
         $this->expectException(ParsingException::class);
         $this->expectExceptionMessage('Syntax error, unexpected \';\'');
 
-        Nacl::parse('+;', 'file');
+        Nacl::parse('+;');
     }
 
     /**
@@ -175,9 +167,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
      */
     public function testRegisterMacro(): void
     {
-        Nacl::registerMacro($macro = new Macros\Callback('strtoupper', function ($p) {
-            return strtoupper($p);
-        }));
+        Nacl::registerMacro($macro = new Macros\Callback('strtoupper', fn($p) => strtoupper($p)));
         $this->assertSame(['foo' => 'BAR'], Nacl::parse('foo .strtoupper bar'));
         $this->assertSame(['foo' => 'BAR'], Nacl::parse('${BAR} = .strtoupper bar; foo ${BAR};'));
     }

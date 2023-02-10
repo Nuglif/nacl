@@ -20,18 +20,18 @@ class Lexer extends AbstractLexer
     protected const STATE_INSTRING  = 1;
     protected const STATE_INHEREDOC = 2;
 
-    const REGEX_SPACE      = '[ \t\n\r]+';
-    const REGEX_COMMENT    = '(?://|\#).*';
-    const REGEX_COMMENT_ML = '/\*';
-    const REGEX_NAME       = '[A-Za-z_][A-Za-z0-9_-]*';
-    const REGEX_VAR        = '?:\${([A-Za-z0-9_]+)}';
-    const REGEX_NUM        = '(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:[eE](?:\+|-)?[0-9]+)?(?:m(?:in|s)|[KkGgMm][Bb]?|[b|s|h|d|w|y])?';
-    const REGEX_DQUOTE     = '"';
-    const REGEX_HEREDOC    = '?:<<<([A-Za-z0-9_]+)\n';
-    const REGEX_BOOL       = '(?:true|false|yes|no|on|off)\b';
-    const REGEX_NULL       = 'null\b';
-    const REGEX_TOKEN      = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
-    const REGEX_ANY        = '.';
+    public const REGEX_SPACE      = '[ \t\n\r]+';
+    public const REGEX_COMMENT    = '(?://|\#).*';
+    public const REGEX_COMMENT_ML = '/\*';
+    public const REGEX_NAME       = '[A-Za-z_][A-Za-z0-9_-]*';
+    public const REGEX_VAR        = '?:\${([A-Za-z0-9_]+)}';
+    public const REGEX_NUM        = '(?:[0-9]*\.?[0-9]+|[0-9]+\.)(?:[eE](?:\+|-)?[0-9]+)?(?:m(?:in|s)|[KkGgMm][Bb]?|[b|s|h|d|w|y])?';
+    public const REGEX_DQUOTE     = '"';
+    public const REGEX_HEREDOC    = '?:<<<([A-Za-z0-9_]+)\n';
+    public const REGEX_BOOL       = '(?:true|false|yes|no|on|off)\b';
+    public const REGEX_NULL       = 'null\b';
+    public const REGEX_TOKEN      = '[\[\]=:{};,.()&|%^/*+-]|<<|>>';
+    public const REGEX_ANY        = '.';
 
     private string $textBuffer;
 
@@ -69,9 +69,7 @@ class Lexer extends AbstractLexer
 
                     return Token::T_NUM;
                 },
-                self::REGEX_NAME => function () {
-                    return Token::T_NAME;
-                },
+                self::REGEX_NAME => fn() => Token::T_NAME,
                 self::REGEX_HEREDOC => function (&$yylval) {
                     $needle = "\n" . $yylval;
                     $pos = strpos($this->content, $needle, $this->count);
@@ -86,18 +84,12 @@ class Lexer extends AbstractLexer
 
                     return Token::T_END_STR;
                 },
-                self::REGEX_TOKEN => function ($yylval) {
-                    return $yylval;
-                },
-                self::REGEX_VAR => function () {
-                    return Token::T_VAR;
-                },
+                self::REGEX_TOKEN => fn($yylval) => $yylval,
+                self::REGEX_VAR => fn() => Token::T_VAR,
                 self::REGEX_ANY => function ($yylval) {
                     $this->error('Unexpected char \'' . $yylval . '\'');
                 },
-                self::EOF => function () {
-                    return Token::T_EOF;
-                },
+                self::EOF => fn() => Token::T_EOF,
             ],
             self::STATE_INSTRING => [
                 '[^\\\"$]+' => function (&$yylval) {
@@ -167,24 +159,17 @@ class Lexer extends AbstractLexer
 
     private function fromCharCode(int $bytes): string
     {
-        switch (true) {
-            case (0x7F & $bytes) == $bytes:
-                return chr($bytes);
-
-            case (0x07FF & $bytes) == $bytes:
-                return chr(0xc0 | ($bytes >> 6))
-                     . chr(0x80 | ($bytes & 0x3F));
-
-            case (0xFFFF & $bytes) == $bytes:
-                return chr(0xe0 | ($bytes >> 12))
-                     . chr(0x80 | (($bytes >> 6) & 0x3F))
-                     . chr(0x80 | ($bytes & 0x3F));
-
-            default:
-                return chr(0xF0 | ($bytes >> 18))
-                     . chr(0x80 | (($bytes >> 12) & 0x3F))
-                     . chr(0x80 | (($bytes >> 6) & 0x3F))
-                     . chr(0x80 | ($bytes & 0x3F));
-        }
+        return match (true) {
+            (0x7F & $bytes) == $bytes => chr($bytes),
+            (0x07FF & $bytes) == $bytes => chr(0xc0 | ($bytes >> 6))
+                 . chr(0x80 | ($bytes & 0x3F)),
+            (0xFFFF & $bytes) == $bytes => chr(0xe0 | ($bytes >> 12))
+                 . chr(0x80 | (($bytes >> 6) & 0x3F))
+                 . chr(0x80 | ($bytes & 0x3F)),
+            default => chr(0xF0 | ($bytes >> 18))
+                 . chr(0x80 | (($bytes >> 12) & 0x3F))
+                 . chr(0x80 | (($bytes >> 6) & 0x3F))
+                 . chr(0x80 | ($bytes & 0x3F)),
+        };
     }
 }

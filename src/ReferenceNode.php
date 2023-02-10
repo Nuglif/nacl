@@ -17,7 +17,7 @@ namespace Nuglif\Nacl;
 
 class ReferenceNode extends Node
 {
-    const ROOT = '/';
+    public const ROOT = '/';
 
     private mixed $path;
     private bool $isResolving = false;

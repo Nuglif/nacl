@@ -42,21 +42,12 @@ class Env implements MacroInterface
 
     private function cast(mixed $value, string $type): bool|string|int|float
     {
-        switch ($type) {
-            case 'bool':
-            case 'boolean':
-                return TypeCaster::toBool($value);
-            case 'int':
-            case 'integer':
-                return (int) TypeCaster::toNum($value);
-            case 'num':
-            case 'numeric':
-                return TypeCaster::toNum($value);
-            case 'str':
-            case 'string':
-                return $value;
-            default:
-                throw new \InvalidArgumentException('Unknown type: ' . $type);
-        }
+        return match ($type) {
+            'bool', 'boolean' => TypeCaster::toBool($value),
+            'int', 'integer' => (int) TypeCaster::toNum($value),
+            'num', 'numeric' => TypeCaster::toNum($value),
+            'str', 'string' => $value,
+            default => throw new \InvalidArgumentException('Unknown type: ' . $type),
+        };
     }
 }

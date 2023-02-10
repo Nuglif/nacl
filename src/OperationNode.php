@@ -17,17 +17,17 @@ namespace Nuglif\Nacl;
 
 class OperationNode extends Node
 {
-    const ADD          = '+';
-    const SUB          = '-';
-    const OR_OPERATOR  = '|';
-    const AND_OPERATOR = '&';
-    const SHIFT_LEFT   = '<<';
-    const SHIFT_RIGHT  = '>>';
-    const MOD          = '%';
-    const DIV          = '/';
-    const MUL          = '*';
-    const POW          = '**';
-    const CONCAT       = '.';
+    public const ADD          = '+';
+    public const SUB          = '-';
+    public const OR_OPERATOR  = '|';
+    public const AND_OPERATOR = '&';
+    public const SHIFT_LEFT   = '<<';
+    public const SHIFT_RIGHT  = '>>';
+    public const MOD          = '%';
+    public const DIV          = '/';
+    public const MUL          = '*';
+    public const POW          = '**';
+    public const CONCAT       = '.';
 
     private mixed $left;
     private mixed $right;

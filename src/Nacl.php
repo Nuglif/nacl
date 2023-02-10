@@ -17,7 +17,7 @@ namespace Nuglif\Nacl;
 
 class Nacl
 {
-    private static $macros = [];
+    private static array $macros = [];
 
     public static function registerMacro(MacroInterface $macro): void
     {

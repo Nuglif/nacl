@@ -26,14 +26,14 @@ class DumperTest extends \PHPUnit\Framework\TestCase
      */
     public function parsedDumpOutputIsEqualToDumpInput($options, $json)
     {
-        $expected = json_decode($json, true);
+        $expected = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         $dumper = new Dumper($options);
         $nacl   = $dumper->dump($expected);
 
         try {
             $result = Nacl::parse($nacl);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $result = null;
         }
 

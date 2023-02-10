@@ -397,11 +397,11 @@ class Parser
         $includeValue = new ObjectNode();
 
         $fileName = $fileName instanceof Node ? $fileName->getNativeValue() : $fileName;
-        if (isset($options['glob']) ? $options['glob'] : false) {
+        if ($options['glob'] ?? false) {
             $files = $this->glob($fileName);
         } else {
             if (!$path = $this->resolvePath($fileName)) {
-                if (isset($options['required']) ? $options['required'] : true) {
+                if ($options['required'] ?? true) {
                     $this->error('Unable to include file \'' . $fileName . '\'');
                 }
 
@@ -433,16 +433,12 @@ class Parser
 
     public function resolvePath(string $file): string|false
     {
-        return $this->relativeToCurrentFile(function () use ($file) {
-            return realpath($file);
-        });
+        return $this->relativeToCurrentFile(fn() => realpath($file));
     }
 
     private function glob(string $pattern): array
     {
-        return $this->relativeToCurrentFile(function () use ($pattern) {
-            return array_map('realpath', glob($pattern) ?: []);
-        });
+        return $this->relativeToCurrentFile(fn() => array_map('realpath', glob($pattern) ?: []));
     }
 
     private function relativeToCurrentFile(callable $cb): mixed

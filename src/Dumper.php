@@ -156,18 +156,10 @@ class Dumper
     private function dumpString(string $var): string
     {
         if (!$this->hasOption(self::QUOTE_STR) && preg_match('#^(' . Lexer::REGEX_NAME . ')$#A', $var)) {
-            switch ($var) {
-                case 'true':
-                case 'false':
-                case 'on':
-                case 'off':
-                case 'yes':
-                case 'no':
-                case 'null':
-                    return '"' . $var . '"';
-                default:
-                    return $var;
-            }
+            return match ($var) {
+                'true', 'false', 'on', 'off', 'yes', 'no', 'null' => '"' . $var . '"',
+                default => $var,
+            };
         }
 
         return '"' . strtr($var, [
