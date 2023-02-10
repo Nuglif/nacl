@@ -54,7 +54,7 @@ class Parser
     /**
      * Nacl ::= RootValue | InnerObject
      */
-    private function getAstFromString(string $str, ?string $filename): mixed
+    private function getAstFromString(string $str, string $filename): mixed
     {
         $this->lexer->push($str, $filename);
         $this->nextToken();

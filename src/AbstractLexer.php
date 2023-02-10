@@ -93,7 +93,7 @@ abstract class AbstractLexer
         return '#\G(' . implode(')|\G(', $patterns) . ')#A';
     }
 
-    public function push(string $content, ?string $filename = null): void
+    public function push(string $content, string $filename): void
     {
         if ('' !== $this->content) {
             $this->stack[] = [
@@ -107,7 +107,7 @@ abstract class AbstractLexer
         $this->line     = 1;
         $this->content  = $content;
         $this->count    = 0;
-        $this->filename = $filename ?: '';
+        $this->filename = $filename;
     }
 
     public function pop(): bool
