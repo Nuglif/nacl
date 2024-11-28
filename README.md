@@ -1,7 +1,6 @@
 Nuglif Application Configuration Language (NACL)
 ================================================
 
-[![Build Status](https://travis-ci.com/Nuglif/nacl.svg?branch=master)](https://travis-ci.com/Nuglif/nacl)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Latest Stable Version](https://poser.pugx.org/nuglif/nacl/v/stable)](https://packagist.org/packages/nuglif/nacl)
 [![Code Coverage](https://scrutinizer-ci.com/g/Nuglif/nacl/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Nuglif/nacl/?branch=master)
