@@ -25,7 +25,7 @@ class Parser
     private array $macro     = [];
     private array $variables = [];
 
-    public function __construct(Lexer $lexer = null)
+    public function __construct(?Lexer $lexer = null)
     {
         $this->lexer = $lexer ?: new Lexer();
     }
@@ -153,7 +153,7 @@ class Parser
      * KeyValueList ::= VariableAssignation|KeyValue [ Separator [ KeyValueList ] ]
      * KeyValue     ::= ( ( T_END_STR | T_NAME ) OptionalAssignementOperator Value ) | MacroCall
      */
-    private function parseInnerObject(ObjectNode $object = null): ObjectNode
+    private function parseInnerObject(?ObjectNode $object = null): ObjectNode
     {
         $object = $object ?: new ObjectNode();
         do {

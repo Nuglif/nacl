@@ -54,7 +54,7 @@ class NaclTest extends \PHPUnit\Framework\TestCase
 
         $this->parser->registerMacro(new Macros\Callback('testMacroWithOptions', fn($p, $a = []) => [
             'param'   => $p,
-            'options' => $a
+            'options' => $a,
         ]));
 
         $this->parser->registerMacro(new Macros\Callback('testMacro', fn($p, $a = []) => $p));
